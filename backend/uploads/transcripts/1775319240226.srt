@@ -1,0 +1,1344 @@
+1
+00:00:00,000 --> 00:00:12,000
+can you hear me in the back? Awesome. Let's start. So my name is Ewan Bilan and today
+
+2
+00:00:12,000 --> 00:00:18,580
+we're going to talk about this new paradigm in NLP called self-attention. So actually
+
+3
+00:00:18,580 --> 00:00:25,180
+like couple of months ago I saw this blog post by Eugenio Culorcello and he writes, drop
+
+4
+00:00:25,180 --> 00:00:30,020
+your RNNs, drop the LSTM, don't use those anymore. You don't need that. You only need
+
+5
+00:00:30,020 --> 00:00:37,420
+attention. Attention is all you need, right? And when I read this I was like, what? Like
+
+6
+00:00:37,420 --> 00:00:42,820
+we did this for three or five years and we were so successful and now we're just supposed
+
+7
+00:00:42,820 --> 00:00:49,900
+to throw it away. So in this talk I'm going to answer this question, like can we actually
+
+8
+00:00:49,900 --> 00:00:56,180
+skip the whole part and just use attention? So let's take a quick step back. I'm currently
+
+9
+00:00:56,180 --> 00:01:00,940
+studying computational linguistics at the LMU. I'm also studying technology management
+
+10
+00:01:00,940 --> 00:01:07,740
+at the same time. I'm doing a lot of research mainly in relation extraction, author profiling,
+
+11
+00:01:07,740 --> 00:01:10,980
+author obfuscation and stuff like that. If you're interested in any of those come up
+
+12
+00:01:10,980 --> 00:01:18,980
+to me later. And I also work as a part-time data engineer at TrustU. So just very quickly
+
+13
+00:01:18,980 --> 00:01:24,060
+at TrustU we do automated summarization. We collect a lot of reviews from the internet
+
+14
+00:01:24,060 --> 00:01:29,380
+and then for each hotel in the world, based on the reviews they get, we output like one
+
+15
+00:01:29,380 --> 00:01:37,220
+sentence summary like for 600,000 hotels. Okay, so let's jump right in. First let's take a
+
+16
+00:01:37,220 --> 00:01:45,300
+look at how the sort of neural NLP has developed. So we all started with RNNs. In an RNN you
+
+17
+00:01:45,300 --> 00:01:50,780
+can get a sequence, a sentence, and then you just go from the first one to the last and
+
+18
+00:01:50,780 --> 00:01:55,500
+encode information and in the end it sort of outputs an encoder that is like a sentence
+
+19
+00:01:55,500 --> 00:01:59,780
+embedding. But there RNNs didn't really work that well. Well, they are a bit more complex
+
+20
+00:01:59,780 --> 00:02:06,820
+than that, but there is a problem of like the gradients not propagating properly, you're
+
+21
+00:02:06,820 --> 00:02:13,260
+losing a lot of information. So that's why people came up with long-short-term memory
+
+22
+00:02:13,260 --> 00:02:19,900
+and gated recurrent units. So basically it's an improvement or RNN which just adds up more
+
+23
+00:02:19,900 --> 00:02:26,820
+logic that helps the model decide whether the input is important or not and should I
+
+24
+00:02:26,820 --> 00:02:32,820
+propagate it to the next step. So they use sort of something called gating mechanisms
+
+25
+00:02:32,820 --> 00:02:39,380
+and this is the whole logic that's in there. Well, people also use CNNs for NLP. Well, when
+
+26
+00:02:39,380 --> 00:02:44,140
+I first started this was really weird for me. Like how can you use a CNN for NLP? Well,
+
+27
+00:02:44,140 --> 00:02:49,460
+the best way to think about this is in the image you have pixels and then you have sort
+
+28
+00:02:49,460 --> 00:02:54,820
+of height and width. You actually, and then you do like max pooling and stuff like that
+
+29
+00:02:54,820 --> 00:03:00,020
+or that. Well, actually you have the same thing in sentences because your height is
+
+30
+00:03:00,020 --> 00:03:06,940
+like the number of words in the sentence and the width is the dimensionality of the embedding
+
+31
+00:03:06,980 --> 00:03:15,340
+of word-to-vec embedding, for example. So that's how you can use CNNs. And LSTMs are
+
+32
+00:03:15,340 --> 00:03:21,500
+often used in an architecture that we call encoder-decor or sequence-to-sequence. Especially
+
+33
+00:03:21,500 --> 00:03:27,340
+this is used in neural machine translation where you input a sentence in German and then
+
+34
+00:03:27,340 --> 00:03:33,860
+it will output a sentence in English. And this looks kind of like this. So the red part
+
+35
+00:03:33,860 --> 00:03:40,380
+is the encoder. You can use LSTM, GRU, whatever you want. And somehow you encode the sentence
+
+36
+00:03:40,380 --> 00:03:45,660
+and create a vector Z that is sort of like a sentence embedding. And then you give the
+
+37
+00:03:45,660 --> 00:03:50,340
+sentence embedding to your decoder model, which can also be an LSTM but doesn't have
+
+38
+00:03:50,340 --> 00:03:54,180
+to. And then it will sort of translate it. So this is a really nice example where it's
+
+39
+00:03:54,180 --> 00:04:00,820
+translating an idiom from German. It's actually translated correctly in English and says it's
+
+40
+00:04:00,820 --> 00:04:09,060
+an awesome sauce. Right. But, so LSTMs were kind of created to deal with this vanishing
+
+41
+00:04:09,060 --> 00:04:14,940
+gradient problem. So the information, not propagating. And sort of LSTMs were supposed
+
+42
+00:04:14,940 --> 00:04:20,540
+to fix this. But this is a sentence. This is like, I don't know, 50 words long. This
+
+43
+00:04:20,540 --> 00:04:27,980
+is from Word and Peace by Leo Tolstoy. And like, are we supposed to use an LSTM for that?
+
+44
+00:04:27,980 --> 00:04:32,900
+That's not really going to work. So what's the solution here? We move on to attention
+
+45
+00:04:32,900 --> 00:04:39,540
+mechanisms. You can use attention to improve LSTMs as well as CNNs, either for NLP or
+
+46
+00:04:39,540 --> 00:04:46,740
+for image recognition. So let's first start with understanding images. This is a model
+
+47
+00:04:46,740 --> 00:04:52,780
+from DeepMind. And it sort of hops over the image but only attends to the most important
+
+48
+00:04:52,780 --> 00:04:57,820
+part. So here it's classifying like house numbers. And you see, it doesn't scan the
+
+49
+00:04:57,820 --> 00:05:02,100
+whole image. It only scans the part that has the number in there. Well, actually it's
+
+50
+00:05:02,100 --> 00:05:09,180
+very similar in NLP. When you read the text, you often skim through it. You don't really
+
+51
+00:05:09,180 --> 00:05:14,140
+read the whole thing all the time. And maybe only some parts of it are important, some
+
+52
+00:05:14,140 --> 00:05:21,460
+and all. So this is a sort of model that uses LSTMs as attention to do summarization of
+
+53
+00:05:21,460 --> 00:05:27,420
+restaurant reviews and beauty salon reviews. And you can see the red part is actually where
+
+54
+00:05:27,420 --> 00:05:33,660
+the model is paying the most attention. So it's saying like, this is a nice place, my
+
+55
+00:05:33,660 --> 00:05:39,100
+favorite restaurant, food is incredible, and so on. So the model is actually selecting
+
+56
+00:05:39,100 --> 00:05:46,140
+the stuff that's important for the summarization. And you can also use this attention in the
+
+57
+00:05:46,180 --> 00:05:51,220
+in-coder decoder model when you're translating from one language to another. You see that
+
+58
+00:05:51,220 --> 00:05:59,420
+the width of those lines actually show you how much attention the word you're going to
+
+59
+00:05:59,420 --> 00:06:04,500
+translate is paying to other words in the sentence. So the bigger it is, the more attention
+
+60
+00:06:04,500 --> 00:06:10,420
+it pays to it. It's a bit more complex than that. There are a lot of formulas. But when
+
+61
+00:06:10,500 --> 00:06:16,940
+you deal with attention, you can either use it for translation, but you can actually use
+
+62
+00:06:16,940 --> 00:06:23,660
+it for simple document classification. Like you can just create an attention or a word
+
+63
+00:06:23,660 --> 00:06:30,260
+to both the sentence embedding and then over that, you can build sort of document embedding
+
+64
+00:06:30,260 --> 00:06:35,820
+based on the sentences. And you will only attend to the sentences that actually should
+
+65
+00:06:36,300 --> 00:06:43,100
+contribute to your classification. So I'm not going to go over the formulas, but when you deal
+
+66
+00:06:43,100 --> 00:06:48,780
+with attention, most of the time they look like this. So the first part, the U is the context
+
+67
+00:06:48,780 --> 00:06:55,100
+factor. And there are many ways how you can do this. So there's no standard way for attention.
+
+68
+00:06:55,100 --> 00:07:01,340
+That is why in PyTor's TensorFlow, there is no layer called attention. You just have LSTMs
+
+69
+00:07:01,420 --> 00:07:07,660
+and RNNs because there are so many of them. But the next part is almost always the same. You
+
+70
+00:07:07,660 --> 00:07:13,580
+just do like a softmax operation to get the probability and then use those probabilities
+
+71
+00:07:13,580 --> 00:07:22,260
+to improve your LSTM or whatever you're using. Right. So actually, this helps a lot. On the
+
+72
+00:07:22,260 --> 00:07:30,260
+left side, you see in neural machine translation, we use a blue score to say how accurate the
+
+73
+00:07:30,260 --> 00:07:38,260
+translation is. And if the sentence has more words, has more than 40 words, then it sort of
+
+74
+00:07:38,260 --> 00:07:44,980
+goes down. But on the right side, where you have attention, that sort of stays stable even
+
+75
+00:07:44,980 --> 00:07:51,940
+if sentences are really long, like 60 words or even more. So that works quite well. Well,
+
+76
+00:07:51,940 --> 00:07:59,460
+actually, it also helps you to see what the model is learning, what's it attending to.
+
+77
+00:07:59,460 --> 00:08:06,100
+So you can look at those weights, what words are contributing to other ones. So you can look at
+
+78
+00:08:06,100 --> 00:08:12,740
+individual words, let's say this from French to English. This word is translated and it looks
+
+79
+00:08:13,540 --> 00:08:19,620
+to economic area or whatnot. And then you do another one. And sort of you can also debug your
+
+80
+00:08:19,620 --> 00:08:28,020
+model this way, but also sort of visualize it. Right. So we saw we can use attention to improve
+
+81
+00:08:28,020 --> 00:08:35,860
+LSTMs, but it's also possible to skip the whole LSTM CNN part and use attention. So this was
+
+82
+00:08:35,860 --> 00:08:44,340
+so first done by Google Brain. They published a paper in July 2017. So a year ago, where they
+
+83
+00:08:44,340 --> 00:08:54,100
+don't have any convolution, no recurrence, it's just layers of attention. And sort of very high
+
+84
+00:08:54,100 --> 00:09:00,180
+level overview, it just takes one word and then compares it to all the other words and tries to
+
+85
+00:09:00,180 --> 00:09:06,340
+get the similarity. And it's like a set operation. It doesn't care where the word is. So it just
+
+86
+00:09:06,340 --> 00:09:11,540
+compares everything to everything. And then based on that, it encodes this information,
+
+87
+00:09:11,540 --> 00:09:18,820
+presses it to the decoder. Then the decoder can also attend to separate words. Right. So the model
+
+88
+00:09:18,820 --> 00:09:24,900
+is actually quite complicated, but we'll try to figure it out at least on a more higher level.
+
+89
+00:09:24,900 --> 00:09:31,780
+So on the left side, you have the encoder and the right is the decoder. Basically, there are only
+
+90
+00:09:32,420 --> 00:09:38,020
+few like specific layers in there that are then just repeated or used in like different
+
+91
+00:09:38,020 --> 00:09:45,460
+constellation. So we start with our sentence, which is encoded in word to work or whatever.
+
+92
+00:09:46,420 --> 00:09:52,100
+And I told you it's a set operation. Right. So it's like the model doesn't know where the words
+
+93
+00:09:52,100 --> 00:09:59,220
+are positioned. So they also actually had this very interesting idea of instead of passing like
+
+94
+00:09:59,220 --> 00:10:04,180
+indices of words where the words are situated in the sentence, they use
+
+95
+00:10:05,220 --> 00:10:10,980
+wavelengths functions to generate a wave that will then show where the word is in the sentence.
+
+96
+00:10:10,980 --> 00:10:16,740
+I'm going to show you more example and that just keep that in mind. After that, you have this block,
+
+97
+00:10:16,740 --> 00:10:22,900
+the whole encoder. And in the encoder first, you have multi head attention, which is like
+
+98
+00:10:23,540 --> 00:10:29,380
+actually the soul of the whole architecture. This is the self attention itself. So we're going to
+
+99
+00:10:29,380 --> 00:10:34,100
+look into that in more detail, but let's talk on the, like, let's see what it is on the higher
+
+100
+00:10:34,100 --> 00:10:40,260
+level. You have also residual connections. You probably know that from like imaging algorithms
+
+101
+00:10:40,260 --> 00:10:45,140
+where you, where you do something with the input, you don't want to lose too much information.
+
+102
+00:10:45,140 --> 00:10:51,220
+So in the beginning, you make a copy of it and then add it up at that copy to your output later
+
+103
+00:10:51,220 --> 00:10:57,140
+that you sort of still keep that information. And then in the end, after the, the soul multi
+
+104
+00:10:57,140 --> 00:11:03,620
+head attention, they have a sort of four feed forward network that is trying to figure out
+
+105
+00:11:03,620 --> 00:11:08,580
+what the attention was outputting. So it's very simple, like using activation function,
+
+106
+00:11:08,580 --> 00:11:16,020
+weights and biases. And in the end, you have to somehow, sorry, to somehow to normalize the
+
+107
+00:11:16,020 --> 00:11:22,020
+output. So you've probably heard about batch normalization or lay normalization. So the
+
+108
+00:11:22,020 --> 00:11:28,020
+authors here using layer normalization for neural machine translation. For them, it works quite
+
+109
+00:11:28,020 --> 00:11:33,780
+well. Right. And then the decoder is sort of almost the same. It's just structured a bit
+
+110
+00:11:33,780 --> 00:11:40,660
+differently. An important part now you, you can also have like multiple layers. So the encoder
+
+111
+00:11:40,660 --> 00:11:45,540
+can be like six layers. It's the same that you would do with LSTM. So you can also have like
+
+112
+00:11:45,540 --> 00:11:52,500
+multiple layers of LSTM. And then the multi head attention, it's also like copied, but you're
+
+113
+00:11:52,500 --> 00:11:58,340
+going to look into that very soon. So I told you about the positional encodings in the form of
+
+114
+00:11:58,340 --> 00:12:04,580
+a wavelength. So basically the authors say, Hey, I'm going to give, I'm going to have this function
+
+115
+00:12:04,580 --> 00:12:13,060
+where I give the index position of reward. And then I do some like mass magic with some constants.
+
+116
+00:12:13,060 --> 00:12:19,060
+And in the end, I'm going to get a wavelength. So it can easily be easily visualized like this.
+
+117
+00:12:19,060 --> 00:12:25,540
+But this is another visualization of that. So you can see there, like this is word number
+
+118
+00:12:26,100 --> 00:12:33,140
+index zero, word one, two, three, and so on. And then for each position in a sentence,
+
+119
+00:12:33,140 --> 00:12:37,700
+it's kind of generating those things. And actually the, the authors say, Oh,
+
+120
+00:12:37,700 --> 00:12:43,140
+that doesn't really make that much difference. What they do here, you can just use like typical
+
+121
+00:12:43,140 --> 00:12:49,860
+positional embeddings. But there's one difference. When you like, during your training, you see
+
+122
+00:12:49,940 --> 00:12:56,900
+only sentences that are up to length 60 words. So when you're predicting and the sentences are
+
+123
+00:12:56,900 --> 00:13:03,140
+longer than the 60 words, and you're just using like learned positional embeddings,
+
+124
+00:13:03,140 --> 00:13:09,620
+then we're going to work because your model has never actually seen word at position 61 or 62,
+
+125
+00:13:09,620 --> 00:13:16,180
+because that wasn't present in the training model. So, but, but here, if you use this function,
+
+126
+00:13:16,180 --> 00:13:23,620
+you just say, Hey, here's position 62, generate me this wavelength. So this can actually help the
+
+127
+00:13:23,620 --> 00:13:30,020
+model to work with even longer sentences. Right. But this is very absolute. So it's just encoding
+
+128
+00:13:30,020 --> 00:13:38,500
+it for one position. Then there was like a follow up research by the same authors. Basically,
+
+129
+00:13:38,500 --> 00:13:44,500
+they say, Hey, we can have relative positional embeddings. So let's look at the context.
+
+130
+00:13:44,580 --> 00:13:49,140
+Let's see, maybe they have a window towards before the word I'm looking at
+
+131
+00:13:49,780 --> 00:13:56,420
+towards after that word. And then I'll try to also get the context. How are the embeddings
+
+132
+00:13:56,420 --> 00:14:04,020
+looking for that word? Yeah, so actually at the LMU in my university, we had this idea as well,
+
+133
+00:14:04,020 --> 00:14:11,620
+even before the paper was published. But we have a sort of different implementation. We also use
+
+134
+00:14:11,620 --> 00:14:17,860
+relative embeddings. But instead of having a window that sort of moves, we use something called
+
+135
+00:14:17,860 --> 00:14:25,380
+positional bidding. So let's say next word is very important to me. The word after that is also
+
+136
+00:14:25,380 --> 00:14:30,580
+important, but words like three, four, five, they're not so important. So let's bend them up in one
+
+137
+00:14:31,300 --> 00:14:37,700
+class sort of, and they all get the same weights. And then if they are even longer, far away,
+
+138
+00:14:37,700 --> 00:14:45,780
+then make the bin even bigger. So yeah, well, the attention, the multi had attention, the sort of
+
+139
+00:14:45,780 --> 00:14:54,180
+soul of the architecture is actually very simple. I'm going to explain everything. So it uses this
+
+140
+00:14:54,180 --> 00:15:03,540
+idea that you can use queries to extract some values. And the query is your word encoding. And
+
+141
+00:15:03,620 --> 00:15:11,540
+then you somehow create those two matrices keys that you can do similarity with and then values. So
+
+142
+00:15:11,540 --> 00:15:17,540
+I showed you, I told you in the beginning, I take one word and then just try to look how similar
+
+143
+00:15:17,540 --> 00:15:22,580
+are other words in the sentence to the word I'm looking at now. And in order to do this
+
+144
+00:15:22,580 --> 00:15:29,380
+efficiently and fast, you have to have these separate matrices to do that. So let's go over an
+
+145
+00:15:29,380 --> 00:15:39,700
+example. Say I have the sentence, right? It's from word one until word n. And my words are encoded
+
+146
+00:15:39,700 --> 00:15:47,300
+with word to act over terror. So in the original model, they have 512 dimensions. And then you do
+
+147
+00:15:47,300 --> 00:15:52,260
+the positional stuff that we talked about, you just add them up. So you sort of also add this
+
+148
+00:15:52,260 --> 00:15:57,860
+information where the words are situated in the sentence. And then let's say, okay, let's look at
+
+149
+00:15:57,860 --> 00:16:07,380
+one word, word at position x2. I want to see how similar are other words to that one. So I use
+
+150
+00:16:07,380 --> 00:16:13,620
+something called compatibility function. And I say at position two, look at position one, look at
+
+151
+00:16:13,620 --> 00:16:19,540
+position three and four and so on. And let's find out how similar they are. And you can do this
+
+152
+00:16:19,540 --> 00:16:26,900
+by using this trick with key matrices. And in the end, extract the similar words using the value
+
+153
+00:16:26,980 --> 00:16:34,020
+matrices. So if I do this for position two and one, I get some sort of similarity. Maybe this word
+
+154
+00:16:34,020 --> 00:16:40,260
+is a bit similar. When I compare it to itself, of course, it's the most similar because the word
+
+155
+00:16:40,260 --> 00:16:46,020
+in the sentence is most similar to itself. And then let's say, for example, the word three is
+
+156
+00:16:46,020 --> 00:16:51,540
+even more similar to that than the word one. Word four is even more. So that means, hey, I need to
+
+157
+00:16:51,540 --> 00:16:58,260
+pay attention to this word four when I'm looking at word two because somehow it's similar. And you
+
+158
+00:16:58,260 --> 00:17:04,740
+do this for the whole sentence. And now you have to somehow use it. So you can run a softmax
+
+159
+00:17:04,740 --> 00:17:09,940
+operation. Basically, softmax will give you a probability distribution over all of those
+
+160
+00:17:09,940 --> 00:17:17,140
+similarities that you have just computed. And now you can use this probability to create this top
+
+161
+00:17:17,140 --> 00:17:24,420
+level z vector. It's like we saw in the encoder, LSTM creates those z vectors that are sort of like
+
+162
+00:17:24,420 --> 00:17:30,260
+a sentence embedding. And here, you're basically doing the same thing, but you're not using
+
+163
+00:17:30,260 --> 00:17:36,740
+recurrence or anything else. You're just using this attention mechanism with similarity. And then
+
+164
+00:17:36,740 --> 00:17:44,260
+you do this trick where you multiply this similarity probability with this other matrix
+
+165
+00:17:44,820 --> 00:17:51,460
+of values. And then this is how you're encoding in the end looks like, right? And you do this
+
+166
+00:17:51,460 --> 00:17:56,580
+couple of times, basically, you multiply your heads, and you have different heads. And actually,
+
+167
+00:17:58,100 --> 00:18:02,500
+they are in the beginning the same, but all of them have different weights. So they learn
+
+168
+00:18:02,500 --> 00:18:08,580
+something else, each of them learned something else. So the head on the left, sort of here,
+
+169
+00:18:08,660 --> 00:18:16,100
+you can see it looks very closely to the words next to it. And the word on the head on the right,
+
+170
+00:18:16,660 --> 00:18:23,060
+it kind of attends to words that are further away, right? So it's sort of learning something from
+
+171
+00:18:23,060 --> 00:18:31,140
+there. And then there are also other examples where somehow figures out, like, a reference
+
+172
+00:18:31,700 --> 00:18:38,260
+what are words referring to, like if I have the animal cross the street because it was too tired,
+
+173
+00:18:38,340 --> 00:18:44,500
+or didn't cross the street. And then the it, it was too tired. The head can actually figure out
+
+174
+00:18:44,500 --> 00:18:51,860
+what it is referring to. Is it referring to animal or to the street? So yeah. And then
+
+175
+00:18:52,820 --> 00:18:58,740
+when you try to reimplement this model yourself, you'll just go and fail because there are so
+
+176
+00:18:58,740 --> 00:19:05,460
+many details. It's just ridiculous. A lot of constants, lots of stuff. One example is you
+
+177
+00:19:05,460 --> 00:19:11,540
+can't really train it the usual way. You have to do learning rate warm up, which means you start
+
+178
+00:19:11,540 --> 00:19:18,900
+with a learning rate zero. And then you increase it gradually over like 4,000 epochs. And after
+
+179
+00:19:18,900 --> 00:19:25,380
+epoch 4,000, you, you sort of decay it. And for some reason, this works better when you're doing
+
+180
+00:19:25,380 --> 00:19:31,860
+like neural machine translation. And then this model is training for like 300,000 epochs. But
+
+181
+00:19:31,940 --> 00:19:36,820
+that's probably because it's Google, right? They have tons of data. So they need more time.
+
+182
+00:19:37,780 --> 00:19:43,060
+Right. So don't, don't do this from scratch. There is an official library from Google created in
+
+183
+00:19:43,060 --> 00:19:50,660
+TensorFlow. There are also other ones in MX NAT, in PyTorch. And you can also find like really
+
+184
+00:19:50,660 --> 00:19:56,180
+nice blocks to try to go or the code and explain how it is sort of implemented.
+
+185
+00:19:57,140 --> 00:20:02,660
+Right. So we saw self-sufficiency can be used for neural machine translation, but there are
+
+186
+00:20:02,660 --> 00:20:09,300
+actually other applications. And again, Google Brain, they used it for something else. They tried to
+
+187
+00:20:10,260 --> 00:20:16,980
+quickly summarize text like based on Wikipedia articles. And then they can also generate new
+
+188
+00:20:16,980 --> 00:20:22,900
+Wikipedia articles like fake ones. And they have an example where the model generates a
+
+189
+00:20:22,980 --> 00:20:29,860
+Wikipedia article about the Japanese metal band. It was like Japanese names and cities and whatever,
+
+190
+00:20:29,860 --> 00:20:35,220
+and it looks so real, but it's actually totally fake. The model has learned to sort of create those
+
+191
+00:20:35,220 --> 00:20:46,180
+texts itself. Then we, at our university, a team of researchers used it for like relation
+
+192
+00:20:46,180 --> 00:20:52,500
+argument extraction. So we're going to come back to that in a bit. Then there's some research by
+
+193
+00:20:52,500 --> 00:20:58,180
+Berkeley University. They used self-sufficiency in color to improve constituency parsing, and they
+
+194
+00:20:58,180 --> 00:21:04,820
+are actually beating the state of the art, which I think was previously like LSTM based. And then
+
+195
+00:21:04,820 --> 00:21:13,220
+right now there's a lot of research going on into self-sufficiency by OpenAI. They're saying, hey,
+
+196
+00:21:13,220 --> 00:21:19,620
+we trained this like task agnostic language model that can do lots of stuff like question
+
+197
+00:21:19,700 --> 00:21:24,260
+answering, a textual entainment reasoning, and it's all based on sort of self-attention.
+
+198
+00:21:24,900 --> 00:21:30,020
+This is, there is a preprint. It's not published. They're still working on it, but it's really cool.
+
+199
+00:21:30,020 --> 00:21:38,340
+And you can see the dates. It's like everything is like super new. This all happened in 2018. So
+
+200
+00:21:38,340 --> 00:21:47,220
+this area of research is like really new, but also very exciting. So just quick note, Google is not
+
+201
+00:21:47,220 --> 00:21:52,260
+the only one doing this. There is also another self-attention model, which is called DSAN,
+
+202
+00:21:52,260 --> 00:21:56,420
+like Directional Substantion. We're not going to talk about that because that would need another
+
+203
+00:21:56,420 --> 00:22:03,460
+presentation, but just so you know, there are other options to do this. Okay, so now I want to
+
+204
+00:22:03,460 --> 00:22:10,660
+introduce our research from the LMU. We actually used a self-attention in color to do a relation
+
+205
+00:22:10,660 --> 00:22:17,780
+classification, and this is done together with Benjamin Roth. He's a professor of computational
+
+206
+00:22:17,780 --> 00:22:23,460
+linguistics at LMU, and we basically worked on this for the last half a year or something.
+
+207
+00:22:24,020 --> 00:22:30,180
+So what is a relation extraction? Let's first have a couple of examples. So in relation to
+
+208
+00:22:30,180 --> 00:22:38,260
+extraction, you try to extract some information from sentences. You have two entities in the
+
+209
+00:22:38,260 --> 00:22:44,500
+sentence, and then you try to find, hey, what is the relation between those entities? For example,
+
+210
+00:22:45,060 --> 00:22:53,380
+relation person employee of, you will figure out, hey, does this person X work for a company Y
+
+211
+00:22:53,380 --> 00:22:59,940
+over terror? And I have an example for that. For example, sentence go, AIG intends to sell shares
+
+212
+00:22:59,940 --> 00:23:06,980
+in American life insurance, blah, blah, blah, said Fumio Shisado, a Tokyo-based spokesman for AIG.
+
+213
+00:23:06,980 --> 00:23:14,420
+So you have two entities. One is Fumio Shisado, the other one is AIG, and then you tell, hey,
+
+214
+00:23:14,420 --> 00:23:20,100
+look into this, and what is the relation here? What is there is a relation in this sentence
+
+215
+00:23:20,100 --> 00:23:26,020
+between Fumio Shisado and AIG? And then the model looks at the sentence, and based on the
+
+216
+00:23:26,020 --> 00:23:30,980
+what the sentence has, like all the other context words, it decides what relation it is.
+
+217
+00:23:31,940 --> 00:23:38,420
+So, yeah, and why you need a relation extraction, basically, you use it in many ways. First, you
+
+218
+00:23:38,420 --> 00:23:45,060
+can create knowledge databases, ontologies, you can use it in question answering, summarization.
+
+219
+00:23:46,020 --> 00:23:52,900
+This technique is even used in biology to find protein interactions, and there are many use
+
+220
+00:23:52,900 --> 00:24:02,100
+cases for this. So, before we had, like, neural NLP, we had this feature-based approach. It did
+
+221
+00:24:02,100 --> 00:24:08,980
+some parsing and stuff, and it had rules, and one of the rules is, hey, look, if there exists some
+
+222
+00:24:08,980 --> 00:24:14,340
+dependency tree that is no longer than two words and whatnot, so this was like state-of-the-art
+
+223
+00:24:14,340 --> 00:24:22,100
+until 2015, and then came along some neural models, we used CNNs, we used LSTMs, and they
+
+224
+00:24:22,100 --> 00:24:29,220
+improved a lot the state-of-the-art, and sort of the final state-of-the-art, up until now,
+
+225
+00:24:29,220 --> 00:24:36,580
+was from Stanford, Stanford NLP, they had this idea to use an LSTM with attention,
+
+226
+00:24:36,580 --> 00:24:42,020
+but they improve attention, they call it position-aware attention, so actually,
+
+227
+00:24:42,580 --> 00:24:48,580
+I told you, in relation extraction, you have two entities, and what they do is they encode
+
+228
+00:24:48,580 --> 00:24:55,780
+separate positional embeddings for those entities, so they say, oh, my first entity is at position
+
+229
+00:24:55,780 --> 00:25:02,020
+five, so let's create like an embedding for that, and my another entity is somewhere in the end of
+
+230
+00:25:02,020 --> 00:25:07,460
+the sentence, so I have a different positional embedding for that, right, and then they use LSTM,
+
+231
+00:25:07,460 --> 00:25:12,260
+and I told you, like, you're going to see this formula a lot, because that's basically how you do
+
+232
+00:25:12,260 --> 00:25:17,940
+attention, and as I've told you, they sort of have their own idea of how to create this context
+
+233
+00:25:17,940 --> 00:25:23,060
+vector, and the rest is the same, and also they didn't just create the model, they also
+
+234
+00:25:23,060 --> 00:25:31,460
+created a really nice dataset, it's quite huge, it's 120,000 examples, and it actually has 42
+
+235
+00:25:31,460 --> 00:25:38,980
+relation classes, which is a lot, and it's relation classes like for persons and for organizations,
+
+236
+00:25:39,140 --> 00:25:50,020
+and one thing is, this dataset is very complex, because 80% of it is like examples where there
+
+237
+00:25:50,020 --> 00:25:56,340
+is no relation, let's say you have a sentence, Mike is working as a, I don't know, a teacher,
+
+238
+00:25:57,460 --> 00:26:02,660
+there is a relation that Mark is a teacher, but if you have a sentence, Mike is not a teacher,
+
+239
+00:26:02,660 --> 00:26:07,620
+then there is no relation, like, it's a negation, so the model has to also figure this out, or if
+
+240
+00:26:07,620 --> 00:26:14,340
+you have a sentence, Jane likes to travel around the US, is there a relation between Jane and US?
+
+241
+00:26:14,340 --> 00:26:19,220
+Maybe there is some, but it's not important to our database, like, you're not building
+
+242
+00:26:19,220 --> 00:26:26,660
+facts about where Jane likes to travel to, so there is no relation in our model, and they,
+
+243
+00:26:26,820 --> 00:26:36,820
+so that they get like 65.1 F score, which is quite high considering you have 42 classes,
+
+244
+00:26:37,460 --> 00:26:43,380
+and the sentences are really long, like, the average sentence is 40 words, and the longest one
+
+245
+00:26:43,380 --> 00:26:53,860
+is like 96, which is quite a lot, so yeah, and then we implement a new model, we use self-attention,
+
+246
+00:26:53,940 --> 00:26:57,860
+plus we use this part of position of our attention, so we in the end combine them.
+
+247
+00:26:58,420 --> 00:27:04,660
+First, let's look at self-attention encoder, this is what we had before, it's what I try to explain
+
+248
+00:27:04,660 --> 00:27:12,100
+to you, and then this is our modification of that, so we change a lot of stuff, I told you we have
+
+249
+00:27:12,100 --> 00:27:19,060
+our own implementation of like relative embeddings, and then we don't have two residual connections,
+
+250
+00:27:19,060 --> 00:27:24,100
+we only have one, because we saw this works much better for the task of relation extraction,
+
+251
+00:27:24,660 --> 00:27:29,460
+then we also even changed like activation functions, we found out that ReLU is not
+
+252
+00:27:29,460 --> 00:27:35,700
+working so well here, random ReLU is much better, also layer normalization doesn't work, we tried
+
+253
+00:27:35,700 --> 00:27:40,660
+like different techniques, and so okay, batch normalization is working much better, then we
+
+254
+00:27:40,660 --> 00:27:46,180
+change a lot of stuff, maybe the most important one is that we don't have to train for like 300,000
+
+255
+00:27:46,180 --> 00:27:52,980
+epochs, the model actually converges in just 60, maybe it's just because less data, maybe it's just
+
+256
+00:27:52,980 --> 00:28:00,980
+the task, but it's just taking like one hour to get really good results, so how do we combine that,
+
+257
+00:28:00,980 --> 00:28:08,580
+I told you, hey this part is sort of generated by an LSTM, so let's just take that away and plug in
+
+258
+00:28:09,140 --> 00:28:17,140
+our output of the self-attention encoder, so we give this Q vector or Z vector,
+
+259
+00:28:18,020 --> 00:28:25,380
+and then we also change this other thing, they say they also want like a final output of the LSTM,
+
+260
+00:28:25,380 --> 00:28:29,540
+which is like the final sentence encoding, and we say okay, we can also provide that,
+
+261
+00:28:29,540 --> 00:28:37,380
+we just do like a max pooling layer of our self-encoder output, and hey, we are completely
+
+262
+00:28:37,380 --> 00:28:44,420
+replacing LSTMs in this case, so this model is attention only, it has self-attention and then on
+
+263
+00:28:44,420 --> 00:28:51,620
+top it's using a position of our attention created by Stanford, so yeah, what are the results,
+
+264
+00:28:51,620 --> 00:28:59,380
+if we compare that, we are getting better results, well not that much better, just 1.5% in general,
+
+265
+00:28:59,380 --> 00:29:05,220
+if you're using one model, but still better, like we are the new state of the art basically,
+
+266
+00:29:05,220 --> 00:29:11,300
+at least based on that data set, and what also Stanford LPE did is they also had an
+
+267
+00:29:11,300 --> 00:29:17,300
+assembling model, so they tried five models with different random seeds, and then did majority
+
+268
+00:29:17,300 --> 00:29:23,380
+wording over that, and we do the same thing, and for some reason the assembling doesn't really
+
+269
+00:29:23,380 --> 00:29:30,900
+work that well, we are like 0.1% there, which is, yeah, not so much, but still a bit better,
+
+270
+00:29:31,860 --> 00:29:38,500
+right, for this, this was all done in PyTorch, and Python obviously, so
+
+271
+00:29:39,940 --> 00:29:45,780
+yeah, I've been working on this for the last half a year, and I really like PyTorch coming from
+
+272
+00:29:46,420 --> 00:29:53,860
+Tiano or TensorFlow, I really like programming in PyTorch, so yeah, I guess it's about it,
+
+273
+00:29:53,860 --> 00:29:59,700
+get in touch, unfortunately our research is not published yet, we are still working on it,
+
+274
+00:29:59,780 --> 00:30:06,740
+but we will probably have a pre-print next week or in two weeks on Archive, and I hope in August
+
+275
+00:30:06,740 --> 00:30:13,860
+we'll release the source code so that everyone can use it, yeah, lots of references, take a look at
+
+276
+00:30:13,860 --> 00:30:26,340
+those, thank you for your attention, that's not a problem. Thanks very much Ivan for a really nice
+
+277
+00:30:26,340 --> 00:30:31,220
+talk, are there any questions in the audience? Yeah, over here.
+
+278
+00:30:38,980 --> 00:30:43,940
+Hi, thank you for the talk, I have a question about memory consumption of the model,
+
+279
+00:30:45,220 --> 00:30:50,660
+as we can see, like for example in the hierarchical attention models, you basically compare
+
+280
+00:30:50,660 --> 00:30:59,140
+every time with a context vector, and here you store matrices with similarity from all of the words
+
+281
+00:30:59,140 --> 00:31:07,620
+to all of the words, how extensive is memory if you don't have that much power as Google has?
+
+282
+00:31:08,820 --> 00:31:15,540
+Yeah, you do use up more memory, but it's much faster because it's parallelized,
+
+283
+00:31:15,540 --> 00:31:22,180
+so each head from this multi-head attention can be calculated in parallel, you do get like you
+
+284
+00:31:22,180 --> 00:31:28,660
+need more memory, but for the example we did versus relation extraction, it was okay, like
+
+285
+00:31:29,780 --> 00:31:36,820
+I had a GPU that's six gigabytes VRAM and it still was fine, like you don't need a, I don't know,
+
+286
+00:31:36,820 --> 00:31:39,620
+V100 over there. Okay, thank you. Sure.
+
+287
+00:31:44,740 --> 00:31:50,740
+Yeah, thanks very much for the interesting talk, one question on the latest research you did and
+
+288
+00:31:50,740 --> 00:31:56,180
+presented today, how did you come up with the changes you made to the architecture you're
+
+289
+00:31:57,140 --> 00:32:05,300
+a new model is based on? Yeah, so some of it was based on previous research from our university,
+
+290
+00:32:05,380 --> 00:32:11,940
+but the rest was many times trying out things, it's like deep learning is basically trying out
+
+291
+00:32:11,940 --> 00:32:18,660
+stuff and maybe it'll work, and I had half a year for that, so yeah, in the end, so in the paper
+
+292
+00:32:18,660 --> 00:32:24,580
+we're going to publish, I try to explain everything that we tried, so then you don't have to do it
+
+293
+00:32:24,580 --> 00:32:32,180
+again, so wait for that, there's everything explained, but this actually was a lot of trial
+
+294
+00:32:32,180 --> 00:32:39,540
+and error, but in the end the results are pretty good. Sure. Any more questions somewhere?
+
+295
+00:32:43,380 --> 00:32:50,580
+So I have one related question, so do you actually do a proper feature ablation study
+
+296
+00:32:50,580 --> 00:32:55,700
+when you kind of, like you did a lot of changes, so do you actually explore which part of the
+
+297
+00:32:55,700 --> 00:33:00,820
+change of the architecture is getting you an improvement of how many percent on that dataset?
+
+298
+00:33:00,820 --> 00:33:07,860
+Yeah, actually we do, again, it will be in the paper, so I have like a table comparing all the
+
+299
+00:33:07,860 --> 00:33:14,900
+results and we also try to visualize the models, like I showed you, you can visualize attention
+
+300
+00:33:14,900 --> 00:33:21,300
+and you can do the same thing with self-attention, so we go or some sentence examples and try to see
+
+301
+00:33:21,300 --> 00:33:27,140
+hey what's changing and what's better, so we actually like debugging it sentence by sentence
+
+302
+00:33:27,140 --> 00:33:31,940
+sometimes to figure out hey does this actually work? And what was the most important architecture
+
+303
+00:33:31,940 --> 00:33:39,540
+change? I think the residual connections, like if you only have one and then batch normalization
+
+304
+00:33:39,540 --> 00:33:46,980
+was huge impact and actually also using this position attention layer from Stanford helps a
+
+305
+00:33:46,980 --> 00:33:53,140
+lot because if you only use self-attention encoder, which you can do actually, the results are like
+
+306
+00:33:53,140 --> 00:33:57,540
+half of the state of the art, so you actually need this additional attention layer for that.
+
+307
+00:33:57,540 --> 00:34:02,100
+Okay, thank you. Any other questions? We have plenty of time for one or two over there.
+
+308
+00:34:11,140 --> 00:34:21,540
+I was just wondering why we use cosine and sinusoidal functions like for the positions,
+
+309
+00:34:21,540 --> 00:34:30,020
+like I didn't get this part too well. Yeah, I think it was just a gimmick for the paper,
+
+310
+00:34:30,020 --> 00:34:39,140
+like to make it look cool, but actually they actually say in the paper hey you can just use
+
+311
+00:34:39,140 --> 00:34:45,220
+like typical positional embeddings and the results are the same, right, but I told you there's one
+
+312
+00:34:45,220 --> 00:34:52,100
+difference, right, if you train a model that only sees short sentences when you do like typical
+
+313
+00:34:52,100 --> 00:34:59,060
+positional embeddings, it can't learn anything about the positions that are like over the ones
+
+314
+00:34:59,060 --> 00:35:05,060
+that you saw, but if you just run this like over cosine and sine function, it will actually give
+
+315
+00:35:05,060 --> 00:35:10,420
+you a wavelength, so you kind of can learn something from that. So that's like the biggest
+
+316
+00:35:10,500 --> 00:35:20,740
+difference I see there. Waving is like, like do you do any transformations on this functions later
+
+317
+00:35:20,740 --> 00:35:28,260
+on to get wavelength? Yeah, they like dividing by some constants and stuff, and the constants are
+
+318
+00:35:28,260 --> 00:35:33,300
+just, again, I think trial and error from the authors of the paper, they just tried so many
+
+319
+00:35:33,300 --> 00:35:39,460
+things and say okay this works, right, maybe they have some explanation for those, but it's hard to
+
+320
+00:35:39,540 --> 00:35:48,500
+like find the papers like really short. Great talk, thanks. Thanks. What do you think is
+
+321
+00:35:48,500 --> 00:35:56,100
+attention really all you need? Is it going to replace CNNs and LSEMs? I think so, especially
+
+322
+00:35:57,300 --> 00:36:02,580
+not just based on our research, but I told you OpenAI is working on this, and they have like
+
+323
+00:36:02,580 --> 00:36:09,140
+really really promising results, and they haven't like fully published yet, so I'm hoping they will
+
+324
+00:36:09,140 --> 00:36:14,340
+bring out something really cool, and then maybe we don't really need to use LSTMs or anything.
+
+325
+00:36:17,220 --> 00:36:20,340
+Thank you very much. More questions or yeah?
+
+326
+00:36:27,540 --> 00:36:33,700
+I have one more question. How can it deal with the, with text of different lengths? For example,
+
+327
+00:36:33,700 --> 00:36:40,020
+I have, I don't know, comments which are like 200 words, and also the others who are like only five
+
+328
+00:36:40,660 --> 00:36:47,860
+words length. Yeah, because the attention, the whole point of attention is that you,
+
+329
+00:36:48,580 --> 00:36:54,180
+you look like at word 200, but you always have this reference vector with all the attention,
+
+330
+00:36:54,180 --> 00:36:59,300
+so you can just look back and see, based on the probability distribution, what are the most
+
+331
+00:36:59,380 --> 00:37:04,980
+similar words to the one I'm looking at? So I can actually, maybe the word one is more similar,
+
+332
+00:37:04,980 --> 00:37:10,500
+right? And this, for example, the difference between German and English is in, in German,
+
+333
+00:37:10,500 --> 00:37:15,460
+you have verbs like in the end of the sentence, so the LSTM wouldn't really work that well,
+
+334
+00:37:15,460 --> 00:37:21,380
+so you need like buy LSTM that goes both ways, but here you don't need that because like it's
+
+335
+00:37:21,380 --> 00:37:29,380
+always even distribution and it always knows what to attend to. Okay, thanks. Sure. Thank you very
+
+336
+00:37:29,380 --> 00:37:35,460
+much. So let's thank you again for a really nice talk.
+

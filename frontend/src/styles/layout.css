@@ -1,0 +1,45 @@
+/* ================================
+   REUSABLE LAYOUT HELPERS
+   ================================ */
+
+.container-page {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+/* Tablet */
+@media (min-width: 640px) {
+  .container-page {
+    padding: 1.5rem;
+  }
+}
+
+/* Laptop */
+@media (min-width: 1024px) {
+  .container-page {
+    padding: 2rem;
+  }
+}
+
+.section-gap {
+  margin-top: 1.5rem;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* ===== TOP BAR ===== */
+/*
+.contact-btn{
+  background:#0ea5e9;
+  padding:8px 16px;
+  border-radius:8px;
+  color:white;
+  border:none;
+  cursor:pointer;
+}
+*/

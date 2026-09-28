@@ -1,0 +1,278 @@
+.analytics-container{
+width:100%;
+max-width:1800px;
+margin:auto;
+padding:30px 40px;
+margin-bottom: 28px;
+}
+
+/* KPI GRID */
+
+.analytics-grid{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:28px;
+margin-bottom:30px;
+}
+
+.analytics-card{
+background:linear-gradient(
+145deg,
+rgba(15,23,42,0.9),
+rgba(15,23,42,0.7)
+);
+
+border-radius:16px;
+border:1px solid rgba(56,189,248,0.12);
+
+padding:24px;
+
+backdrop-filter:blur(12px);
+}
+
+.analytics-title{
+font-size:14px;
+color:#94a3b8;
+}
+
+.analytics-value{
+font-size:32px;
+font-weight:600;
+margin-top:6px;
+color:white;
+}
+
+.analytics-danger{
+color:#ef4444;
+}
+
+/* CARDS */
+
+.chart-card{
+  background:rgba(15,23,42,0.75);
+  border-radius:16px;
+  border:1px solid rgba(56,189,248,0.15);
+  padding:28px;
+  backdrop-filter:blur(12px);
+}
+
+.chart-title{
+font-size:16px;
+font-weight:500;
+color:#cbd5f5;
+margin-bottom:18px;
+}
+
+/* BOTTOM GRID */
+
+.bottom-analytics{
+display:grid;
+grid-template-columns:2.2fr 1.2fr;
+gap:30px;
+}
+
+/* TABLE */
+
+.topic-header,
+.topic-row{
+display:grid;
+grid-template-columns:1fr 2fr 1fr 1fr 1fr;
+align-items:center;
+}
+
+.topic-header{
+color:#94a3b8;
+border-bottom:1px solid rgba(56,189,248,.15);
+padding-bottom:10px;
+}
+
+.topic-row{
+padding:14px 0;
+border-bottom:1px solid rgba(148,163,184,.08);
+}
+
+/* PIE */
+
+.chart-pie-layout{
+display:flex;
+align-items:center;
+justify-content:center;
+gap:60px;
+}
+
+.pie-wrapper{
+position:relative;
+width:260px;
+height:260px;
+}
+
+/* LEGEND */
+
+.emotion-legend{
+display:flex;
+flex-direction:column;
+gap:14px;
+}
+
+.legend-item{
+display:flex;
+align-items:center;
+gap:8px;
+}
+
+.legend-dot{
+width:12px;
+height:12px;
+border-radius:50%;
+}
+
+/* INSIGHTS */
+
+.learning-insights{
+  gap:18px;
+  padding-top:10px;
+}
+.insight-row{
+  display:grid;
+  grid-template-columns:180px auto;
+  align-items:center;
+  font-size:15px;
+  color:#cbd5f5;
+  gap:20px;
+}
+
+.insight-box{
+margin-top:10px;
+padding:18px;
+border-radius:10px;
+background:rgba(56,189,248,0.08);
+border:1px solid rgba(56,189,248,0.18);
+color:#cbd5f5;
+line-height:1.6;
+}
+
+.dominant-emotion{
+display:flex;
+align-items:center;
+gap:8px;
+}
+
+.dominant-dot{
+width:12px;
+height:12px;
+border-radius:50%;
+}
+
+.learning-insights .insight-row{
+  padding:6px 0;
+}
+
+.timeline-card{
+  height:360px;
+}
+
+.analytics-container > div {
+  margin-top: 32px;
+}
+
+.bottom-analytics {
+  margin-top: 32px;
+}
+
+.learning-insights {
+  padding: 22px 26px;
+}
+
+/* ROW GRID */
+.topic-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(148,163,184,0.1);
+}
+
+/* VIDEO COLUMN */
+.col-video {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.video-thumb {
+  width: 64px;
+  height: 42px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+/* TEXT */
+/*
+.video-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #e2e8f0;
+  line-height: 1.3;
+}
+*/
+.video-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: #cbd5f5; /* softer */
+}
+
+.video-id {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+/* CENTER COLUMNS */
+.col-center {
+  text-align: center;
+  font-size: 14px;
+}
+
+/* ENGAGEMENT BADGE */
+.engagement-badge {
+  background: rgba(56,189,248,0.15);
+  color: #38bdf8;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+}
+
+/* STRUGGLE BADGES */
+.struggle-badge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+}
+
+.struggle-badge.low {
+  background: rgba(34,197,94,0.15);
+  color: #22c55e;
+}
+
+.struggle-badge.medium {
+  background: rgba(245,158,11,0.15);
+  color: #f59e0b;
+}
+
+.struggle-badge.high {
+  background: rgba(239,68,68,0.15);
+  color: #ef4444;
+}
+
+.row-alert {
+  background: rgba(239, 68, 68, 0.05);
+  border-left: 3px solid #ef4444;
+}
+
+.topic-row:hover {
+  background: rgba(148,163,184,0.05);
+  transition: 0.2s ease;
+}
+
+.topic-row {
+  padding: 16px 0;
+}

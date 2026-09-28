@@ -1,0 +1,306 @@
+.wv-page {
+  padding: 24px;
+  background: #020617;
+  min-height: 100vh;
+  color: #e5e7eb;
+}
+
+/* Header */
+.wv-header h1 {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+
+.wv-header p {
+  opacity: 0.75;
+  max-width: 800px;
+}
+
+/* Layout */
+.wv-layout {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;  /* slightly wider video side */
+  gap: 28px;
+  margin-top: 24px;
+  align-items: start;
+}
+
+/* Video */
+.wv-video {
+  position: relative;
+}
+
+.wv-thumbnail {
+  position: relative;
+  cursor: pointer;
+}
+
+.wv-thumbnail img {
+  width: 100%;
+  border-radius: 14px;
+}
+
+.wv-play {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 64px;
+  color: white;
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 14px;
+}
+
+/* Explanation */
+.wv-explanation {
+  background: #020617;
+  border: 1px solid #1e293b;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+
+  max-height: 280px;   /* same height as transcript */
+  overflow-y: auto;    /* scroll here */
+}
+
+.wv-explanation h3 {
+  margin-bottom: 12px;
+}
+
+.wv-placeholder {
+  opacity: 0.55;
+  font-size: 14px;
+}
+
+.wv-text {
+  white-space: pre-wrap;
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+/* Webcam */
+.wv-webcam {
+  margin-top: 28px;
+}
+
+/* Popup */
+.wv-popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.7);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.wv-popup {
+  background: #020617;
+  border-radius: 14px;
+  padding: 28px;
+  width: 360px;
+  text-align: center;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+}
+
+.wv-popup button {
+  margin-top: 16px;
+  padding: 8px 18px;
+  border-radius: 8px;
+  border: none;
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+}
+
+/* States */
+.wv-loading,
+.wv-error {
+  padding: 40px;
+  text-align: center;
+}
+
+
+
+/* ============================= */
+/* 🤖 Explanation Coach Popup */
+/* ============================= */
+
+.wv-popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.72);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: wvFadeIn 0.25s ease-out;
+}
+
+.wv-popup-coach {
+  width: 380px;
+  background: linear-gradient(
+    180deg,
+    rgba(2, 6, 23, 0.95),
+    rgba(2, 6, 23, 0.98)
+  );
+  border-radius: 18px;
+  padding: 30px 26px;
+  text-align: center;
+  color: #e5e7eb;
+  box-shadow:
+    0 40px 80px rgba(0, 0, 0, 0.7),
+    inset 0 0 0 1px rgba(148, 163, 184, 0.08);
+  animation: wvScaleIn 0.25s ease-out;
+}
+
+/* Icon */
+.wv-popup-icon {
+  font-size: 36px;
+  margin-bottom: 12px;
+}
+
+/* Title */
+.wv-popup-coach h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+/* Text */
+.wv-popup-coach p {
+  font-size: 14px;
+  line-height: 1.7;
+  opacity: 0.85;
+}
+
+/* Button *//*
+.wv-popup-coach button {
+  margin-top: 18px;
+  padding: 10px 22px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.wv-popup-coach button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.45);
+}
+*/
+
+.wv-popup-coach button {
+  margin-top: 18px;
+  padding: 10px 22px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 0 0 rgba(37, 99, 235, 0);
+}
+
+.wv-popup-coach button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
+}
+
+/* Animations */
+@keyframes wvFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes wvScaleIn {
+  from {
+    transform: scale(0.94);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+/* NEW LAYOUT STRUCTURE */
+
+.wv-left {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.wv-right {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.wv-transcript {
+  background: #020617;
+  border: 1px solid #1e293b;
+  border-radius: 16px;
+  padding: 18px;
+  max-height: 280px;
+}
+
+.transcript-line {
+  font-size: 14px;
+  line-height: 1.6;
+  padding: 6px 0;
+  opacity: 0.6;
+  transition: all 0.2s ease;
+}
+
+.transcript-line.active {
+  color: #38bdf8;
+  font-weight: 600;
+  opacity: 1;
+  background: rgba(56, 189, 248, 0.08);
+  padding-left: 8px;
+  border-left: 3px solid #38bdf8;
+}
+.transcript-box {
+  background: #020617;
+  border: 1px solid #1e293b;
+  border-radius: 16px;
+  padding: 18px;
+  max-height: 280px;
+  overflow-y: auto;
+  scroll-behavior: smooth;   /* 👈 ADD HERE */
+}
+
+.wv-webcam-wrapper {
+  background: #020617;
+  border: 1px solid #1e293b;
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+}
+
+/* ============================= */
+/* ✨ Panel Hover Elevation Effect */
+/* ============================= */
+
+.wv-explanation,
+.wv-transcript,
+.wv-webcam-wrapper {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.wv-explanation:hover,
+.wv-transcript:hover,
+.wv-webcam-wrapper:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+}

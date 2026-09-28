@@ -1,0 +1,147 @@
+Today I'm going to be talking about Word Embeddings, which I think are one of the coolest things you can do with machine learning right now,
+and to explain why I think that I'm just going to jump right in and give you an example of something you can do with Word Embeddings.
+So a few months ago, I set up a program that just downloads tweets as people write tweets on Twitter and saves them to a file.
+And after running this program for about a month or two, I had collected a massive file with over five gigabytes of tweets after I compressed it.
+So I got a massive amount of data and it's just raw data that people typed on the internet.
+After getting all this data, I fed it directly into a Word Embedding algorithm, which was able to figure out tons of relationships between words just from the raw things that people happen to type on the internet.
+So for example, if I put in a color, it can tell me a bunch of other colors. It never actually knew the idea of color going in.
+It didn't really know anything and it piece together that all these words are related.
+You can see I can put in other things like a kind of food and I get other kinds of food out.
+And I'll actually have a link in the description so that you can try this out yourself just to see how well it really learned the relationships between words.
+So you're probably wondering how this actually worked because it's kind of baffling.
+All I gave it was things that people typed on the internet. I didn't give it a dictionary. I didn't give it a list of synonyms.
+I mean, I chose English, but I could have chosen any language and it still would have been just as successful.
+So it's pretty impressive that it was able to do this just from raw text.
+And in this video, I really want to explain why this works and how it works.
+And I think it's super cool. So I want to share it with you.
+So pretty much every Word Embedding algorithm uses the idea of context.
+And to show you what I mean, I'm just going to give you a really simple example.
+So here is an example of a sentence where there's a word missing.
+So it says, I painted the bench blank and we're expected to fill in the blank.
+So the obvious thing here is to put a color, right?
+I painted the bench red. I painted the bench green. Something like that.
+And already we can see that, you know, if a word can show up in this context, it's likely to be a color.
+But unfortunately, that's not always true. You could also say, I painted the bench today.
+Today is not a color. But the main takeaway is that context is really kind of closely related to meaning.
+So that was an example where multiple different words could go into the same context.
+And we presume that those words are somehow related, at least a lot of them are.
+But there's another way the context can help us.
+And that's if two words happen to always appear in the same context at once.
+So here are three different sentences that will help us understand this idea.
+In the first sentence, I actually have two examples.
+Donald and Trump are likely to appear together because one's the first name of a person and one's the last name of that same person.
+So those words are closely related.
+We also have United States, which is kind of just one logical word broken up into two smaller words.
+So United and States are likely to appear together.
+And then in the second and third example, we have a joke and laugh are kind of related words.
+You laugh at a joke. So they're also likely to appear in the same context.
+Now, there's one subtle thing that I'd like to point out in this example, which is that laugh and laugh might be different words.
+Like laugh is the present tense and laugh is the past tense.
+And likewise, you know, we could think about joke versus jokes like one is plural, one is singular.
+These are different forms of the same word.
+And ideally, since we knew nothing about English going in, our algorithm, our word embedding is going to have to learn the different forms of the same word are related.
+It has to learn that laugh is somehow related to laugh.
+And what you can see is, you know, these examples give you an idea of how the model might be able to do that because you can see laugh appears with the word joke in the second sentence.
+And laugh appears with the word joke in the third sentence.
+So ideally, the word embedding would figure out then that laugh and laugh are related since they're both related to joke.
+So that's kind of where a word embedding gets its knowledge from.
+It learns things via context. It sees, you know, what words occur near other words.
+But what does a word embedding actually do? I still have to kind of formalize what we're after.
+So in one sentence, a word embedding just converts words into vectors.
+So you might give in a word like hamburger and you would get out a list of, say, 64 numbers.
+And those numbers would describe the word.
+And for a word embedding to be good, we kind of require that the vectors carry some meaning.
+So if I put in hamburger and cheeseburger into my model, I want those vectors to be very close to each other because they're very related words.
+Whereas if I put in something else like Ferrari, like a kind of car, totally unrelated to hamburger,
+I want the vector for Ferrari to be far away from the vector for hamburger.
+And of course, all these distances are relative, but you can kind of see what I mean.
+That we want the closeness of these vectors to resemble the closeness of the words that they represent.
+And in addition to this kind of idea of closeness, we might also want there to be even more structure.
+For example, if I do the vector for man minus the vector for woman.
+And to subtract vectors, we just subtract each number from the corresponding number of the other vectors.
+So if I take the vector for man and I subtract the vector for woman, I want that to somehow represent the difference between male and female.
+And then if I add that vector to the vector for queen, I want it to give me out something very, very close to the vector for king.
+So I want these vectors to be related and I want the differences between vectors to also carry some meaning.
+And I might add other constraints, but the idea is I just want to encode as much meaning as I can into the vectors.
+So how are we actually going to do that?
+How are we going to solve for vectors for all of the words that ever appear on Twitter?
+How are we going to produce the set of vectors that work?
+So the first approach I'm going to be talking about is known as word to veck.
+And it's probably the most famous kind of word embedding because it was the first word embedding to get the kind of impressive results that word embeddings, the state of the art word embeddings get today.
+So essentially word to veck is just a really simple neural network.
+And if you've already seen my other videos on neural networks, you might actually already be able to implement word to veck.
+But I'm just going to try to describe it here on a high level to give you an idea of how it works.
+So here's a really simple picture of what a word to veck neural network looks like.
+You essentially feed in a word and it produces in the middle.
+It produces a small vector, which is a word embedding.
+And then it produces output something like a context.
+And to describe what this is in a little more detail, I'm actually going to give an example of something we might ask a word to veck neural network to do.
+What I've done is I picked out a random tweet from my corpus.
+And I picked out a random word from within that tweet.
+In this case, it was yellow.
+And I'm going to feed as input the word yellow to the word to veck neural network.
+And I'm going to try to get it as output to give me all the other words that were in the tweet.
+So the word to veck neural network in this case is just trying to predict context words from a word.
+So how exactly is it that I feed in the word yellow and I get out all these context words?
+How do I represent that for the neural network?
+Well, basically the network has a different input neuron for each different word.
+So I take the neuron for whatever word I want to feed in and I'll set that neuron to one and I'll set all the other neurons to zero.
+Then the neural network will just use regular neural network stuff to produce a small vector.
+Basically, that's just a hidden layer with 64 neurons.
+And then using more neural network magic, I'll produce back out a vector, maybe with 100,000 components in each neuron
+and that output vector corresponds to a word as well.
+And I want every neuron to be set that is in the context.
+And I want every neuron that wasn't in the context not to be set.
+So why does this work?
+Why do we expect that the middle layer when the word gets turned into a small vector?
+Why do we expect that small vector to actually be meaningful?
+Well, the answer is that that small vector is all the network has to figure out the context.
+So it goes right from that small vector to the context.
+So if two words have very similar contexts, it's really helpful for the neural network if the small vector is similar for those two words.
+Because if it produces a similar output, a similar vector makes sense.
+So essentially, this model is just forcing the middle layer of the neural network to correspond to meaning.
+You know, close words, words with similar contexts will have close vectors in the middle of the network just because that's what's easiest for the network to do.
+So that's kind of just a really general overview of how word-to-vec works.
+And there's a lot more to it, so I'll have a link to the actual original word-to-vec paper in the description if you want to read more about it.
+So besides word-to-vec, there are a bunch of other ways to generate word embeddings.
+And the majority of them are based on this thing called the co-occurrence matrix.
+So here's a really simple example of what this might look like.
+Basically, both the rows and the columns correspond to different words.
+And the entry at any given point in the matrix just counts how many times those two words happen in the same context.
+So you can imagine how we might generate this thing.
+For example, with Twitter data, we might just loop through all the tweets, go through all the words and all those tweets.
+And for every time two words occur in the same tweet, we just add one to that entry in this matrix.
+Now, different methods will use this matrix in different ways, but pretty much all of the methods utilize some amount of linear algebra.
+So I'm going to be just talking about matrices and matrix multiplications, dot products, things like that.
+And if you don't know linear algebra, you're not really going to get much from this, but that's why I kind of left it at the end of the video because some people will get something out of this.
+And I think it's somewhat interesting.
+So probably the simplest approach to generating word embeddings with the co-occurrence matrix is to just decompose the co-occurrence matrix into the product of two much smaller matrices.
+So I've drawn out the picture here. You can basically see that I get this massive square matrix, which is our co-occurrence matrix, by multiplying a tall skinny matrix and a short wide matrix.
+You know, you think about how many entries are in the big matrix. There's 100,000 squared.
+That's a lot more information than is stored on the right side of this equation, which is, you know, two relatively small matrices multiplied together.
+So by decomposing this big co-occurrence matrix into these smaller ones, we're clearly compressing some information.
+And in doing so, hopefully we have to extract a lot of meaning from the matrix so that we can do that compression.
+And that should allow us to at least generate decent embeddings.
+So once we have this matrix decomposition, which I haven't described exactly how we might find this yet, but you could imagine there's plenty of methods in linear algebra to decompose a matrix like singular value decomposition, or you could use gradient descent or something like that.
+But once you have this matrix decomposition, we actually get word vectors pretty much for free.
+For example, in the big co-occurrence matrix, each row in each column corresponds to a word.
+So if I go into this tall skinny matrix and I grab the, you know, the entry for a certain word, that is going to give me a vector, which is pretty small, in this case 64 components.
+And I can call that a word embedding for that word.
+And of course, I didn't have to pick it from the tall skinny matrix, I could have picked it from the short wide matrix, or I could even just decide to average these two vectors and use that as the embedding overall.
+And there's actually a good reason to assume that these vectors would represent a decent amount of meaning.
+The reason is that an entry in the big co-occurrence matrix is equivalent to the dot product of a word vector taken from the tall skinny matrix and a word vector taken from the wide short matrix.
+So basically, a given co-occurrence is approximated by a dot product between two word vectors, basically.
+So if I use these word vectors, what it tells me is that now the dot product represents how likely two words are to co-occur.
+So I've gotten this structure in my vectors, you know, correlation and vectors corresponds to correlation and context.
+So that is why you might expect matrix decomposition to give you good embeddings.
+So now I'll tell you a little bit about the particular method that I used to generate the word embeddings at the beginning of this video.
+The method I used is known as glove, which is short for global vectors, and it is a kind of co-occurrence decomposition method.
+Now, it's a little unique in that it decomposes the logarithm of the co-occurrence matrix instead of the actual co-occurrence matrix.
+And it also is weighted. It uses a model where certain entries in the co-occurrence matrix are more important than others.
+And you use gradient descent to learn the embeddings, so it's similar to training a neural network, and it has really good results and it's extremely fast.
+So I really liked glove. I had a lot more fun implementing glove than I did implementing word to veck.
+And I will certainly have a link to that paper in the description that describes glove, because it's an excellent paper.
+It explains why word to veck works, as well as why glove works, and it talks about a bunch of other word embedding methods.
+So that's pretty much all I had planned for today. I hope I got you really interested in word embeddings.
+And if you want to know more, I highly recommend you read that glove paper in the description, and I'll try to link to other resources as well, because this is a really interesting topic.
+And I think a lot of people will find it cool. So anyway, thanks for watching, subscribe, and goodbye.

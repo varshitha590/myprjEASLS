@@ -1,0 +1,108 @@
+/* ================================
+   REPORT PAGE (APP VIEW)
+================================ */
+
+.report-page {
+  min-height: 100vh;
+  padding: 40px;
+  background: radial-gradient(circle at top, #0b1220, #020617);
+}
+
+/* download button */
+.report-download {
+  margin-bottom: 20px;
+}
+
+/* glass card */
+.report-card {
+  max-width: 900px;
+  margin: auto;
+  padding: 32px;
+
+  border-radius: 18px;
+
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(18px);
+
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-soft);
+
+  color: var(--text-main);
+}
+
+/* headings */
+.report-title {
+  text-align: center;
+  font-size: 26px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.report-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 20px 0;
+}
+
+/* sections */
+.report-section {
+  margin-top: 20px;
+}
+
+.report-section h3 {
+  font-size: 16px;
+  margin-bottom: 8px;
+  color: var(--accent);
+}
+
+/* summary highlight */
+.report-highlight {
+  border-bottom: 2px solid var(--accent);
+  padding-bottom: 6px;
+}
+
+/* event boxes */
+.report-box {
+  margin-top: 20px;
+  padding: 16px;
+
+  border-radius: 12px;
+
+  background: rgba(2, 6, 23, 0.6);
+  border: 1px solid var(--border);
+}
+
+/* list */
+.report-box ul {
+  padding-left: 20px;
+}
+
+/* text */
+.report-muted {
+  color: var(--text-muted);
+}
+
+/* ================================
+   PDF MODE (WHITE EXPORT)
+================================ */
+
+.pdf-mode {
+  background: #ffffff !important;
+  color: #000 !important;
+}
+
+.pdf-mode .report-card {
+  background: #ffffff !important;
+  color: #000 !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+.pdf-mode .report-box {
+  background: #f1f5f9 !important;
+  border: none !important;
+}
+
+.pdf-mode h3 {
+  color: #000 !important;
+}

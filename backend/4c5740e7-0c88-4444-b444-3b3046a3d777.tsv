@@ -1,0 +1,137 @@
+start	end	text
+0	8360	The hard assumption here is that you've watched Part 3, giving an intuitive walkthrough
+8360	11120	of the back propagation algorithm.
+11120	14880	Here we get a little bit more formal and dive into the relevant calculus.
+14880	18520	It's normal for this to be at least a little confusing so the mantra to regularly pause
+18520	21920	and ponder certainly applies as much here as anywhere else.
+21920	26560	Our main goal is to show how people in machine learning commonly think about the chain rule
+26560	31000	from calculus in the context of networks, which has kind of a different feel from how
+31000	34520	most introductory calculus courses approach the subject.
+34520	40400	For those of you uncomfortable with the relevant calculus, I do have a whole series on the topic.
+40400	44800	Let's just start off with an extremely simple network, one where each layer has a single
+44800	46320	neuron in it.
+46320	51240	So this particular network is determined by 3 weights and 3 biases, and our goal is
+51240	55600	to understand how sensitive the cost function is to these variables.
+55600	59240	That way we know which adjustments to those terms is going to cause the most efficient
+59240	61960	decrease to the cost function.
+61960	66000	And we're just going to focus on the connection between the last two neurons.
+66000	70640	Let's label the activation of that last neuron with a superscript L indicating which layer
+70640	71720	it's in.
+71720	76520	So the activation of the previous neuron is a L minus 1.
+76520	80160	These are not exponents, they're just a way of indexing what we're talking about since
+80160	83280	I want to save subscripts for different indices later on.
+83760	87960	Now let's say that the value we want this last activation to be for a given training
+87960	92960	example is y, for example, y might be 0 or 1.
+92960	100280	So the cost of this simple network for a single training example is AL minus y squared.
+100280	106080	We'll denote the cost of that one training example as C0.
+106080	112000	As a reminder, this last activation is determined by a weight, which I'm going to call WL,
+112000	117520	times the previous neuron's activation plus some bias, which I'll call BL.
+117520	121320	And then you pump that through some special nonlinear function like the sigmoid or a ray
+121320	122320	loop.
+122320	125400	It's actually going to make things easier for us if we give a special name to this weighted
+125400	130400	sum, like Z, with the same superscript as the relevant activations.
+130400	134880	So this is a lot of terms and a way that you might conceptualize it is that the weight,
+134880	140160	the previous action and the bias altogether are used to compute Z, which in turn lets
+140160	147320	us compute A, which finally, along with a constant Y, lets us compute the cost.
+147320	152920	And of course, AL minus 1 is influenced by its own weight and bias and such.
+152920	155720	But we're not going to focus on that right now.
+155720	158080	Now all of these are just numbers, right?
+158080	161920	And it can be nice to think of each one as having its own little number line.
+161920	167360	Our first goal is to understand how sensitive the cost function is to small changes in
+167360	169760	our weight, WL.
+169760	175680	Or phrase differently, what is the derivative of C with respect to WL?
+175680	181160	When you see this Dell W term, think of it as meaning some tiny nudge to W, like a change
+181160	183200	by 0.01.
+183200	188760	And think of this Dell C term as meaning whatever the resulting nudge to the cost is.
+188760	191160	What we want is their ratio.
+191160	197720	Conceptually, this tiny nudge to WL causes some nudge to ZL, which in turn causes some
+197720	203160	nudge to AL, which directly influences the cost.
+203160	208000	So we break things up by first looking at the ratio of a tiny change to ZL to this tiny
+208000	213840	change W, that is the derivative of ZL with respect to WL.
+213840	218800	Likewise you then consider the ratio of the change to AL to the tiny change in ZL that
+218800	219880	caused it.
+219880	225840	As well as the ratio between the final nudge to C and this intermediate nudge to AL.
+225840	231120	This right here is the chain rule, where multiplying together these three ratios gives us the
+231120	237280	sensitivity of C to small changes in WL.
+237280	240960	So on screen right now, there's kind of a lot of symbols, and take a moment to just
+240960	243720	make sure it's clear what they all are.
+243720	247400	Because now we're going to compute the relevant derivatives.
+247400	254440	The derivative of C with respect to AL works out to be 2 times AL minus Y. Notice this
+254440	259480	means that its size is proportional to the difference between the networks output and
+259480	261400	the thing that we want it to be.
+261400	266000	So if that output was very different, even slight changes stand to have a big impact on
+266000	268360	the final cost function.
+268360	274000	The derivative of AL with respect to ZL is just the derivative of our sigmoid function,
+274000	277360	or whatever non-linearity you choose to use.
+277360	281520	And the derivative of ZL with respect to WL?
+281520	286080	In this case comes out just to be AL minus 1.
+286080	289440	Now I don't know about you, but I think it's easy to get stuck head down in the formulas
+289440	294160	without taking a moment to sit back and remind yourself of what they all actually mean.
+294160	298840	In the case of this last derivative, the amount that that small nudge to the weight influenced
+298840	303120	the last layer depends on how strong the previous neuron is.
+303120	309280	Remember, this is where that neurons that fire together wire together idea comes in.
+309280	314800	And all of this is the derivative with respect to WL only of the cost for a specific single
+314800	316520	training example.
+316520	320880	Since the full cost function involves averaging together all those costs across many different
+320880	326240	training examples, its derivative requires averaging this expression that we found over
+326240	328480	all training examples.
+328480	333000	And of course that is just one component of the gradient vector, which itself is built
+333000	337560	up from the partial derivatives of the cost function with respect to all those weights
+337560	340760	and biases.
+340760	344200	But even though that's just one of the many partial derivatives we need, it's more than
+344200	346440	50% of the work.
+346440	350280	The sensitivity to the bias, for example, is almost identical.
+350280	358920	We just need to change out this del Z del W term for a del Z del B.
+358920	364680	And if you look at the relevant formula, that derivative comes out to be one.
+364680	370280	Also, and this is where the idea of propagating backwards comes in.
+370280	376440	You can see how sensitive this cost function is to the activation of the previous layer.
+376440	381320	Finally this initial derivative in the chain rule expression, the sensitivity of Z to
+381320	386600	the previous activation comes out to be the weight WL.
+386600	390080	And again, even though we're not going to be able to directly influence that previous
+390080	393200	layer activation, it's helpful to keep track of.
+393200	398680	Because now we can just keep iterating this same chain rule idea backwards to see how
+398680	403680	sensitive the cost function is to previous weights and previous biases.
+403680	407920	You might think that this is an overly simple example, since all layers just have one neuron,
+407920	411680	and that things are going to get exponentially more complicated for a real network.
+411680	416360	But honestly, not that much changes when we give the layers multiple neurons.
+416360	419320	Really it's just a few more indices to keep track of.
+419320	423600	Rather than the activation of a given layer simply being AL, it's also going to have
+423600	427880	a subscript indicating which neuron of that layer it is.
+427880	435280	Let's go ahead and use the letter K to index the layer L-1 and J to index the layer L.
+435280	440720	For the cost, again we look at what the desired output is, but this time we add up the squares
+440720	446120	of the differences between these last layer activations and the desired output.
+446120	453200	That is you take a sum over ALJ-YJ squared.
+453200	456480	Since there's a lot more weights, each one has to have a couple more indices to keep
+456480	458080	track of where it is.
+458080	465720	So let's call the weight of the edge connecting this Kth neuron to the Jth neuron, WLJK.
+465720	469480	Those indices might feel a little backwards at first, but it lines up with how you'd
+469480	473840	index the weight matrix that I talked about in the Part 1 video.
+473840	478400	Just as before, it's still nice to give a name to the relevant weighted sum, like Z,
+478400	483280	so that the activation of the last layer is just your special function, like the sigmoid,
+483280	485080	applied to Z.
+485080	488640	You can kind of see what I mean, right, where all of these are essentially the same equations
+488640	491760	that we had before in the one neuron per layer case.
+491760	495400	It's just that it looks a little more complicated.
+495400	500560	And indeed, the chain rule derivative expression, describing how sensitive the cost is to
+500560	503600	a specific weight, looks essentially the same.
+503600	509400	I'll leave it to you to pause and think about each of those terms if you want.
+509400	513960	What does change here, though, is the derivative of the cost with respect to one of the
+513960	517800	activations in the layer L minus 1.
+517800	521960	In this case, the difference is that the neuron influences the cost function through multiple
+521960	524720	different paths.
+524720	531120	That is, on the one hand, it influences AL0, which plays a role in the cost function,
+531120	536400	but it also has an influence on AL1, which also plays a role in the cost function, and
+536400	540280	you have to add those up.
+540280	543680	And that, well, that's pretty much it.
+543680	547920	Once you know how sensitive the cost function is to the activations in this second to last
+547920	552360	layer, you can just repeat the process for all the weights and biases feeding into that
+552360	553880	layer.
+553880	555400	So pat yourself on the back.
+555400	560440	If all of this makes sense, you have now looked deep into the heart of back propagation,
+560440	563680	the workhorse behind how neural networks learn.
+563680	568080	These chain rule expressions give you the derivatives that determine each component in
+568080	572960	the gradient that helps minimize the cost of the network by repeatedly stepping down
+573040	575040	hill.
+575040	578960	If you sit back and think about all that, this is a lot of layers of complexity to wrap
+578960	580120	your mind around.
+580120	582880	So don't worry if it takes time for your mind to digest it all.

@@ -1,0 +1,443 @@
+WEBVTT
+
+00:00.000 --> 00:06.000
+Today I'm going to be talking about Word Embeddings, which I think are one of the coolest things you can do with machine learning right now,
+
+00:06.000 --> 00:12.000
+and to explain why I think that I'm just going to jump right in and give you an example of something you can do with Word Embeddings.
+
+00:12.000 --> 00:20.000
+So a few months ago, I set up a program that just downloads tweets as people write tweets on Twitter and saves them to a file.
+
+00:20.000 --> 00:29.000
+And after running this program for about a month or two, I had collected a massive file with over five gigabytes of tweets after I compressed it.
+
+00:29.000 --> 00:34.000
+So I got a massive amount of data and it's just raw data that people typed on the internet.
+
+00:34.000 --> 00:44.000
+After getting all this data, I fed it directly into a Word Embedding algorithm, which was able to figure out tons of relationships between words just from the raw things that people happen to type on the internet.
+
+00:44.000 --> 00:52.000
+So for example, if I put in a color, it can tell me a bunch of other colors. It never actually knew the idea of color going in.
+
+00:52.000 --> 00:57.000
+It didn't really know anything and it piece together that all these words are related.
+
+00:57.000 --> 01:01.000
+You can see I can put in other things like a kind of food and I get other kinds of food out.
+
+01:01.000 --> 01:09.000
+And I'll actually have a link in the description so that you can try this out yourself just to see how well it really learned the relationships between words.
+
+01:09.000 --> 01:14.000
+So you're probably wondering how this actually worked because it's kind of baffling.
+
+01:14.000 --> 01:20.000
+All I gave it was things that people typed on the internet. I didn't give it a dictionary. I didn't give it a list of synonyms.
+
+01:20.000 --> 01:25.000
+I mean, I chose English, but I could have chosen any language and it still would have been just as successful.
+
+01:25.000 --> 01:30.000
+So it's pretty impressive that it was able to do this just from raw text.
+
+01:30.000 --> 01:36.000
+And in this video, I really want to explain why this works and how it works.
+
+01:36.000 --> 01:39.000
+And I think it's super cool. So I want to share it with you.
+
+01:39.000 --> 01:44.000
+So pretty much every Word Embedding algorithm uses the idea of context.
+
+01:44.000 --> 01:47.000
+And to show you what I mean, I'm just going to give you a really simple example.
+
+01:47.000 --> 01:52.000
+So here is an example of a sentence where there's a word missing.
+
+01:52.000 --> 01:56.000
+So it says, I painted the bench blank and we're expected to fill in the blank.
+
+01:56.000 --> 01:59.000
+So the obvious thing here is to put a color, right?
+
+01:59.000 --> 02:03.000
+I painted the bench red. I painted the bench green. Something like that.
+
+02:03.000 --> 02:09.000
+And already we can see that, you know, if a word can show up in this context, it's likely to be a color.
+
+02:09.000 --> 02:13.000
+But unfortunately, that's not always true. You could also say, I painted the bench today.
+
+02:13.000 --> 02:19.000
+Today is not a color. But the main takeaway is that context is really kind of closely related to meaning.
+
+02:19.000 --> 02:24.000
+So that was an example where multiple different words could go into the same context.
+
+02:24.000 --> 02:30.000
+And we presume that those words are somehow related, at least a lot of them are.
+
+02:30.000 --> 02:33.000
+But there's another way the context can help us.
+
+02:33.000 --> 02:38.000
+And that's if two words happen to always appear in the same context at once.
+
+02:38.000 --> 02:42.000
+So here are three different sentences that will help us understand this idea.
+
+02:42.000 --> 02:45.000
+In the first sentence, I actually have two examples.
+
+02:45.000 --> 02:51.000
+Donald and Trump are likely to appear together because one's the first name of a person and one's the last name of that same person.
+
+02:51.000 --> 02:53.000
+So those words are closely related.
+
+02:53.000 --> 02:59.000
+We also have United States, which is kind of just one logical word broken up into two smaller words.
+
+02:59.000 --> 03:02.000
+So United and States are likely to appear together.
+
+03:02.000 --> 03:08.000
+And then in the second and third example, we have a joke and laugh are kind of related words.
+
+03:08.000 --> 03:12.000
+You laugh at a joke. So they're also likely to appear in the same context.
+
+03:12.000 --> 03:20.000
+Now, there's one subtle thing that I'd like to point out in this example, which is that laugh and laugh might be different words.
+
+03:20.000 --> 03:24.000
+Like laugh is the present tense and laugh is the past tense.
+
+03:24.000 --> 03:30.000
+And likewise, you know, we could think about joke versus jokes like one is plural, one is singular.
+
+03:30.000 --> 03:32.000
+These are different forms of the same word.
+
+03:33.000 --> 03:42.000
+And ideally, since we knew nothing about English going in, our algorithm, our word embedding is going to have to learn the different forms of the same word are related.
+
+03:42.000 --> 03:46.000
+It has to learn that laugh is somehow related to laugh.
+
+03:46.000 --> 03:57.000
+And what you can see is, you know, these examples give you an idea of how the model might be able to do that because you can see laugh appears with the word joke in the second sentence.
+
+03:57.000 --> 04:01.000
+And laugh appears with the word joke in the third sentence.
+
+04:01.000 --> 04:07.000
+So ideally, the word embedding would figure out then that laugh and laugh are related since they're both related to joke.
+
+04:07.000 --> 04:10.000
+So that's kind of where a word embedding gets its knowledge from.
+
+04:10.000 --> 04:16.000
+It learns things via context. It sees, you know, what words occur near other words.
+
+04:16.000 --> 04:22.000
+But what does a word embedding actually do? I still have to kind of formalize what we're after.
+
+04:22.000 --> 04:27.000
+So in one sentence, a word embedding just converts words into vectors.
+
+04:27.000 --> 04:33.000
+So you might give in a word like hamburger and you would get out a list of, say, 64 numbers.
+
+04:33.000 --> 04:36.000
+And those numbers would describe the word.
+
+04:36.000 --> 04:41.000
+And for a word embedding to be good, we kind of require that the vectors carry some meaning.
+
+04:41.000 --> 04:49.000
+So if I put in hamburger and cheeseburger into my model, I want those vectors to be very close to each other because they're very related words.
+
+04:49.000 --> 04:55.000
+Whereas if I put in something else like Ferrari, like a kind of car, totally unrelated to hamburger,
+
+04:55.000 --> 04:59.000
+I want the vector for Ferrari to be far away from the vector for hamburger.
+
+04:59.000 --> 05:04.000
+And of course, all these distances are relative, but you can kind of see what I mean.
+
+05:04.000 --> 05:10.000
+That we want the closeness of these vectors to resemble the closeness of the words that they represent.
+
+05:10.000 --> 05:17.000
+And in addition to this kind of idea of closeness, we might also want there to be even more structure.
+
+05:17.000 --> 05:23.000
+For example, if I do the vector for man minus the vector for woman.
+
+05:23.000 --> 05:28.000
+And to subtract vectors, we just subtract each number from the corresponding number of the other vectors.
+
+05:28.000 --> 05:36.000
+So if I take the vector for man and I subtract the vector for woman, I want that to somehow represent the difference between male and female.
+
+05:36.000 --> 05:44.000
+And then if I add that vector to the vector for queen, I want it to give me out something very, very close to the vector for king.
+
+05:44.000 --> 05:53.000
+So I want these vectors to be related and I want the differences between vectors to also carry some meaning.
+
+05:53.000 --> 05:59.000
+And I might add other constraints, but the idea is I just want to encode as much meaning as I can into the vectors.
+
+05:59.000 --> 06:01.000
+So how are we actually going to do that?
+
+06:01.000 --> 06:08.000
+How are we going to solve for vectors for all of the words that ever appear on Twitter?
+
+06:08.000 --> 06:11.000
+How are we going to produce the set of vectors that work?
+
+06:11.000 --> 06:15.000
+So the first approach I'm going to be talking about is known as word to veck.
+
+06:15.000 --> 06:26.000
+And it's probably the most famous kind of word embedding because it was the first word embedding to get the kind of impressive results that word embeddings, the state of the art word embeddings get today.
+
+06:26.000 --> 06:30.000
+So essentially word to veck is just a really simple neural network.
+
+06:30.000 --> 06:35.000
+And if you've already seen my other videos on neural networks, you might actually already be able to implement word to veck.
+
+06:35.000 --> 06:40.000
+But I'm just going to try to describe it here on a high level to give you an idea of how it works.
+
+06:40.000 --> 06:45.000
+So here's a really simple picture of what a word to veck neural network looks like.
+
+06:45.000 --> 06:50.000
+You essentially feed in a word and it produces in the middle.
+
+06:50.000 --> 06:53.000
+It produces a small vector, which is a word embedding.
+
+06:53.000 --> 06:56.000
+And then it produces output something like a context.
+
+06:56.000 --> 07:05.000
+And to describe what this is in a little more detail, I'm actually going to give an example of something we might ask a word to veck neural network to do.
+
+07:05.000 --> 07:08.000
+What I've done is I picked out a random tweet from my corpus.
+
+07:08.000 --> 07:11.000
+And I picked out a random word from within that tweet.
+
+07:11.000 --> 07:13.000
+In this case, it was yellow.
+
+07:13.000 --> 07:19.000
+And I'm going to feed as input the word yellow to the word to veck neural network.
+
+07:19.000 --> 07:23.000
+And I'm going to try to get it as output to give me all the other words that were in the tweet.
+
+07:23.000 --> 07:30.000
+So the word to veck neural network in this case is just trying to predict context words from a word.
+
+07:30.000 --> 07:35.000
+So how exactly is it that I feed in the word yellow and I get out all these context words?
+
+07:35.000 --> 07:37.000
+How do I represent that for the neural network?
+
+07:37.000 --> 07:43.000
+Well, basically the network has a different input neuron for each different word.
+
+07:43.000 --> 07:50.000
+So I take the neuron for whatever word I want to feed in and I'll set that neuron to one and I'll set all the other neurons to zero.
+
+07:50.000 --> 07:56.000
+Then the neural network will just use regular neural network stuff to produce a small vector.
+
+07:56.000 --> 07:59.000
+Basically, that's just a hidden layer with 64 neurons.
+
+07:59.000 --> 08:07.000
+And then using more neural network magic, I'll produce back out a vector, maybe with 100,000 components in each neuron
+
+08:07.000 --> 08:10.000
+and that output vector corresponds to a word as well.
+
+08:10.000 --> 08:14.000
+And I want every neuron to be set that is in the context.
+
+08:14.000 --> 08:18.000
+And I want every neuron that wasn't in the context not to be set.
+
+08:18.000 --> 08:20.000
+So why does this work?
+
+08:20.000 --> 08:25.000
+Why do we expect that the middle layer when the word gets turned into a small vector?
+
+08:25.000 --> 08:28.000
+Why do we expect that small vector to actually be meaningful?
+
+08:28.000 --> 08:34.000
+Well, the answer is that that small vector is all the network has to figure out the context.
+
+08:34.000 --> 08:38.000
+So it goes right from that small vector to the context.
+
+08:38.000 --> 08:47.000
+So if two words have very similar contexts, it's really helpful for the neural network if the small vector is similar for those two words.
+
+08:47.000 --> 08:52.000
+Because if it produces a similar output, a similar vector makes sense.
+
+08:52.000 --> 09:00.000
+So essentially, this model is just forcing the middle layer of the neural network to correspond to meaning.
+
+09:00.000 --> 09:09.000
+You know, close words, words with similar contexts will have close vectors in the middle of the network just because that's what's easiest for the network to do.
+
+09:09.000 --> 09:14.000
+So that's kind of just a really general overview of how word-to-vec works.
+
+09:14.000 --> 09:21.000
+And there's a lot more to it, so I'll have a link to the actual original word-to-vec paper in the description if you want to read more about it.
+
+09:21.000 --> 09:25.000
+So besides word-to-vec, there are a bunch of other ways to generate word embeddings.
+
+09:25.000 --> 09:29.000
+And the majority of them are based on this thing called the co-occurrence matrix.
+
+09:29.000 --> 09:32.000
+So here's a really simple example of what this might look like.
+
+09:32.000 --> 09:37.000
+Basically, both the rows and the columns correspond to different words.
+
+09:37.000 --> 09:45.000
+And the entry at any given point in the matrix just counts how many times those two words happen in the same context.
+
+09:45.000 --> 09:48.000
+So you can imagine how we might generate this thing.
+
+09:48.000 --> 09:54.000
+For example, with Twitter data, we might just loop through all the tweets, go through all the words and all those tweets.
+
+09:54.000 --> 10:00.000
+And for every time two words occur in the same tweet, we just add one to that entry in this matrix.
+
+10:00.000 --> 10:08.000
+Now, different methods will use this matrix in different ways, but pretty much all of the methods utilize some amount of linear algebra.
+
+10:08.000 --> 10:13.000
+So I'm going to be just talking about matrices and matrix multiplications, dot products, things like that.
+
+10:13.000 --> 10:23.000
+And if you don't know linear algebra, you're not really going to get much from this, but that's why I kind of left it at the end of the video because some people will get something out of this.
+
+10:23.000 --> 10:25.000
+And I think it's somewhat interesting.
+
+10:25.000 --> 10:37.000
+So probably the simplest approach to generating word embeddings with the co-occurrence matrix is to just decompose the co-occurrence matrix into the product of two much smaller matrices.
+
+10:37.000 --> 10:50.000
+So I've drawn out the picture here. You can basically see that I get this massive square matrix, which is our co-occurrence matrix, by multiplying a tall skinny matrix and a short wide matrix.
+
+10:50.000 --> 10:56.000
+You know, you think about how many entries are in the big matrix. There's 100,000 squared.
+
+10:56.000 --> 11:03.000
+That's a lot more information than is stored on the right side of this equation, which is, you know, two relatively small matrices multiplied together.
+
+11:03.000 --> 11:10.000
+So by decomposing this big co-occurrence matrix into these smaller ones, we're clearly compressing some information.
+
+11:10.000 --> 11:16.000
+And in doing so, hopefully we have to extract a lot of meaning from the matrix so that we can do that compression.
+
+11:16.000 --> 11:21.000
+And that should allow us to at least generate decent embeddings.
+
+11:21.000 --> 11:35.000
+So once we have this matrix decomposition, which I haven't described exactly how we might find this yet, but you could imagine there's plenty of methods in linear algebra to decompose a matrix like singular value decomposition, or you could use gradient descent or something like that.
+
+11:35.000 --> 11:41.000
+But once you have this matrix decomposition, we actually get word vectors pretty much for free.
+
+11:41.000 --> 11:47.000
+For example, in the big co-occurrence matrix, each row in each column corresponds to a word.
+
+11:47.000 --> 12:00.000
+So if I go into this tall skinny matrix and I grab the, you know, the entry for a certain word, that is going to give me a vector, which is pretty small, in this case 64 components.
+
+12:00.000 --> 12:04.000
+And I can call that a word embedding for that word.
+
+12:04.000 --> 12:14.000
+And of course, I didn't have to pick it from the tall skinny matrix, I could have picked it from the short wide matrix, or I could even just decide to average these two vectors and use that as the embedding overall.
+
+12:14.000 --> 12:21.000
+And there's actually a good reason to assume that these vectors would represent a decent amount of meaning.
+
+12:21.000 --> 12:33.000
+The reason is that an entry in the big co-occurrence matrix is equivalent to the dot product of a word vector taken from the tall skinny matrix and a word vector taken from the wide short matrix.
+
+12:33.000 --> 12:42.000
+So basically, a given co-occurrence is approximated by a dot product between two word vectors, basically.
+
+12:42.000 --> 12:50.000
+So if I use these word vectors, what it tells me is that now the dot product represents how likely two words are to co-occur.
+
+12:50.000 --> 12:58.000
+So I've gotten this structure in my vectors, you know, correlation and vectors corresponds to correlation and context.
+
+12:58.000 --> 13:03.000
+So that is why you might expect matrix decomposition to give you good embeddings.
+
+13:03.000 --> 13:10.000
+So now I'll tell you a little bit about the particular method that I used to generate the word embeddings at the beginning of this video.
+
+13:10.000 --> 13:18.000
+The method I used is known as glove, which is short for global vectors, and it is a kind of co-occurrence decomposition method.
+
+13:18.000 --> 13:27.000
+Now, it's a little unique in that it decomposes the logarithm of the co-occurrence matrix instead of the actual co-occurrence matrix.
+
+13:27.000 --> 13:35.000
+And it also is weighted. It uses a model where certain entries in the co-occurrence matrix are more important than others.
+
+13:35.000 --> 13:45.000
+And you use gradient descent to learn the embeddings, so it's similar to training a neural network, and it has really good results and it's extremely fast.
+
+13:45.000 --> 13:52.000
+So I really liked glove. I had a lot more fun implementing glove than I did implementing word to veck.
+
+13:52.000 --> 13:58.000
+And I will certainly have a link to that paper in the description that describes glove, because it's an excellent paper.
+
+13:58.000 --> 14:05.000
+It explains why word to veck works, as well as why glove works, and it talks about a bunch of other word embedding methods.
+
+14:05.000 --> 14:11.000
+So that's pretty much all I had planned for today. I hope I got you really interested in word embeddings.
+
+14:11.000 --> 14:20.000
+And if you want to know more, I highly recommend you read that glove paper in the description, and I'll try to link to other resources as well, because this is a really interesting topic.
+
+14:20.000 --> 14:27.000
+And I think a lot of people will find it cool. So anyway, thanks for watching, subscribe, and goodbye.
+

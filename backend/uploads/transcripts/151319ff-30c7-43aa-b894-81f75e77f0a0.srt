@@ -1,0 +1,1728 @@
+1
+00:00:00,000 --> 00:00:13,000
+Okay. Thanks. Is the microphone good? Yep. All right. So I'll just start with a quick introduction
+
+2
+00:00:13,000 --> 00:00:18,280
+about what these technologies are that I'll talk about a little bit about. But actually
+
+3
+00:00:18,280 --> 00:00:22,840
+most of the talk will be much more general. It's ended up being a bit more of an opinion
+
+4
+00:00:22,840 --> 00:00:28,120
+piece. So, which I actually often find more useful and interesting than talks about,
+
+5
+00:00:28,120 --> 00:00:33,440
+you know, the fine-grained details of some library. So, for the last few years I've been
+
+6
+00:00:33,440 --> 00:00:39,600
+developing this open-source library spacey. And this really sprung out of the need that
+
+7
+00:00:39,600 --> 00:00:45,880
+I saw for a library that took the types of results which were rapidly being generated
+
+8
+00:00:45,880 --> 00:00:51,440
+in academia and that I was working on at the time and made them more accessible for industry.
+
+9
+00:00:51,440 --> 00:01:00,240
+And then, since soon after we launched that, I ended up co-founding a company within
+
+10
+00:01:00,240 --> 00:01:05,920
+us, Montani, called Explosion AI. So in addition to the library spacey, we have a machine
+
+11
+00:01:05,920 --> 00:01:10,440
+learning library that we use with it, I'll call it Think, and an annotation tool
+
+12
+00:01:10,440 --> 00:01:18,120
+prodigy. And soon enough we'll have a data store of pre-trained models that will be providing
+
+13
+00:01:18,120 --> 00:01:24,960
+one alongside spacey as well. So as a sort of quick bio, this is Matthew and that's my
+
+14
+00:01:24,960 --> 00:01:29,360
+co-founder in us. And we're basically, you know, together most pretty much all of Explosion
+
+15
+00:01:29,360 --> 00:01:34,320
+AI. So we're a very small company based here in Berlin that really just does a commercial
+
+16
+00:01:34,320 --> 00:01:40,040
+open-source software. So there's the open-source library and then this commercial tool on top,
+
+17
+00:01:40,040 --> 00:01:46,560
+the annotation tool prodigy. So the way that we often explain the sort of structure of
+
+18
+00:01:46,560 --> 00:01:50,880
+these things, and you know, I guess we do this in an Explanant, like I'm five, or often
+
+19
+00:01:50,880 --> 00:01:55,040
+Explanant, like I'm seeing your management, the analogy that we use is like a boutique
+
+20
+00:01:55,040 --> 00:02:00,000
+kitchen. So the free recipes is kind of like the open-source software. And then we started
+
+21
+00:02:00,000 --> 00:02:05,520
+off doing consulting to support ourselves. But then we've since switched over to this
+
+22
+00:02:05,520 --> 00:02:10,880
+sort of line of gadgets, which is this prodigy and other extensions as well. And soon
+
+23
+00:02:10,880 --> 00:02:14,360
+we'll have premium ingredients that we're selling with this.
+
+24
+00:02:14,360 --> 00:02:20,080
+Okay, so to move into the talk proper, I'll start with this assertion. So the assertion
+
+25
+00:02:20,080 --> 00:02:25,200
+here is that natural language processing projects are like startups, so they fail a lot.
+
+26
+00:02:25,200 --> 00:02:29,920
+And so this is presented without, you know, I'm not going to be pretend scientific and
+
+27
+00:02:29,920 --> 00:02:33,560
+give you like some survey or something, but we have seen this. And to give you a bit
+
+28
+00:02:33,560 --> 00:02:38,400
+of an intuition for why this should be true or to make it seem a little bit more obvious
+
+29
+00:02:38,400 --> 00:02:43,840
+to you, imagine what the world would look like if NLP projects were not failing regularly.
+
+30
+00:02:44,800 --> 00:02:50,240
+Because human language is the, you know, basically the world's information system, this
+
+31
+00:02:50,240 --> 00:02:54,160
+really underpins a lot of commercial activity all over the place, right? And so if it were
+
+32
+00:02:54,160 --> 00:02:58,720
+true that these things didn't fail often, if it were true that we could easily automate
+
+33
+00:02:58,720 --> 00:03:03,520
+a lot of the work that happens in back offices and that sort of underpins this economic activity,
+
+34
+00:03:03,520 --> 00:03:08,800
+we would be seeing a far, far greater upswell in growth of the natural language processing
+
+35
+00:03:08,800 --> 00:03:13,760
+projects. And instead we do see like plenty of growth in NLP as we do with other
+
+36
+00:03:13,760 --> 00:03:18,400
+AI technologies, but it's nothing like what we would see if this were actually just easy,
+
+37
+00:03:18,400 --> 00:03:22,800
+and if everything just worked out of the box. So, and you know, additionally, if you use these
+
+38
+00:03:22,800 --> 00:03:28,560
+technologies like translate or interactive chat applications or search or summarization things,
+
+39
+00:03:29,680 --> 00:03:34,720
+you'll see that these technologies are far from perfect. And so there's this little dance that
+
+40
+00:03:34,720 --> 00:03:40,080
+needs to be done to map those imperfections and get those imperfect technologies delivering
+
+41
+00:03:40,080 --> 00:03:46,480
+useful enough value to justify a commercial investment. And when this works, it works
+
+42
+00:03:46,480 --> 00:03:50,880
+fantastically well. And so there's some projects which basically return the fund like they say
+
+43
+00:03:50,880 --> 00:03:55,440
+for startups where, you know, a few projects are wildly successful, but then there's still a lot of
+
+44
+00:03:55,440 --> 00:04:01,600
+failures. So now the question is what drives that frequency of failure and how can we avoid it and
+
+45
+00:04:01,600 --> 00:04:05,200
+how can we do better? And in particular how can we make sure that your project isn't one of the
+
+46
+00:04:05,200 --> 00:04:10,960
+ones that fail? Well, okay, so to consider this we can flip the question on its head and say,
+
+47
+00:04:10,960 --> 00:04:15,040
+all right, what would we, what would it look like if we wanted to maximize the project's risk of
+
+48
+00:04:15,040 --> 00:04:20,720
+failure? Well, you know, here, so I outlined some steps here. So step one would be, you know,
+
+49
+00:04:20,720 --> 00:04:25,920
+really just sit down and imagine it. So the side, what you think your application ought to do,
+
+50
+00:04:25,920 --> 00:04:31,200
+and you know, don't really fuss too much about what seems practical or what seems likely to work,
+
+51
+00:04:31,200 --> 00:04:36,800
+just, you know, nobody changed the world saying, I'm not sure that that's going to work. So,
+
+52
+00:04:36,800 --> 00:04:42,240
+you know, that's step one and then feed that step one forward into a forecasting process. So,
+
+53
+00:04:42,240 --> 00:04:46,640
+you know, given that, given what you think you want your application to do, figure out what accuracy
+
+54
+00:04:46,640 --> 00:04:52,320
+will need to achieve your dreams. And if you're not sure, just say 90%. Then, you know, the next step
+
+55
+00:04:52,320 --> 00:04:58,800
+of our, you know, a recipe for failure would be, well, okay, now we're just going to outsource this.
+
+56
+00:04:58,800 --> 00:05:03,360
+So, you know, we've thought carefully about what accuracy we want and then, you know,
+
+57
+00:05:03,360 --> 00:05:07,360
+fortunately, we can use that estimate to somehow figure out how much data we want,
+
+58
+00:05:07,360 --> 00:05:10,880
+except we kind of can't. So let's just ask for 10,000 rows or something that should do.
+
+59
+00:05:12,000 --> 00:05:15,920
+And then finally, you know, this is the good part, the part which we all think about a lot for
+
+60
+00:05:15,920 --> 00:05:20,480
+machine learning projects, you know, it's time to wire everything up, time to implement the model,
+
+61
+00:05:20,480 --> 00:05:26,400
+time to iterate and fit the model and like, you know, do all of this good stuff. So, you know,
+
+62
+00:05:26,400 --> 00:05:30,320
+this is the part which we all look forward to and the part that really when people talk about
+
+63
+00:05:30,320 --> 00:05:34,800
+machine learning projects, this is the phase where, you know, the story starts for most people.
+
+64
+00:05:35,680 --> 00:05:40,560
+And then finally, you know, okay, hopefully, we can integrate the thing into the project.
+
+65
+00:05:40,560 --> 00:05:46,720
+And if it doesn't work, then, you know, I hope that we have some, you know, four person who we can
+
+66
+00:05:46,720 --> 00:05:52,560
+blame. And in turn, might be a good target. Okay, so, you know, let's cut to initially,
+
+67
+00:05:52,560 --> 00:05:56,000
+what, you know, how does this actually look like? What's going wrong here?
+
+68
+00:05:56,800 --> 00:06:01,440
+Well, and in particular, you know, I don't want to have this narrative that like, well,
+
+69
+00:06:01,440 --> 00:06:06,240
+life is hard, failure happens often, like, life is uncertain, and we should just like accept it.
+
+70
+00:06:06,240 --> 00:06:11,120
+I do think that there's a lot that we can do to minimize this. And so, you know, how can we do
+
+71
+00:06:11,120 --> 00:06:17,600
+it better? Well, we can start by thinking more broadly about, you know, what makes a successful
+
+72
+00:06:17,600 --> 00:06:22,240
+machine learning application. And so here I've sort of outlined a little hierarchy of needs.
+
+73
+00:06:22,480 --> 00:06:26,480
+And at the base of the pyramid, the sort of like thing that you need most, the sort of basic
+
+74
+00:06:26,480 --> 00:06:32,080
+confident security thing or physical needs is understanding how the model will work into larger
+
+75
+00:06:32,080 --> 00:06:40,000
+application or the business process. So, you know, basically, this is the planning out of what the
+
+76
+00:06:40,000 --> 00:06:45,840
+model will do and what need we're trying to get meant for it. And that design question of,
+
+77
+00:06:45,840 --> 00:06:49,920
+you know, what problem we're going to solve the machine learning is really the fundamental thing.
+
+78
+00:06:49,920 --> 00:06:56,320
+And if we can have a clarity about that, then we can often find ways to design the problems
+
+79
+00:06:56,320 --> 00:07:00,480
+so that the problems will be easier to solve from the machine learning perspective. So, you know,
+
+80
+00:07:00,480 --> 00:07:05,680
+we can make our lives easier and make sure that we're getting technologies that it will be we're
+
+81
+00:07:05,680 --> 00:07:10,800
+crafting the problem in a way that the technology can easily meet. So then the next step is to take
+
+82
+00:07:10,800 --> 00:07:14,960
+that business need and map it into annotation schemes and corpus constructions so that we can
+
+83
+00:07:15,680 --> 00:07:22,160
+decide what the data should look like to actually meet that, to meet the needs that we have.
+
+84
+00:07:22,880 --> 00:07:26,640
+And in particular, we want to make sure that we're designing the annotation scheme in a way
+
+85
+00:07:26,640 --> 00:07:32,960
+that facilitates consistent annotations and easy decisions from the models. And this is actually
+
+86
+00:07:32,960 --> 00:07:37,040
+a lot harder than it sounds, especially for natural language processing because you end up kind of
+
+87
+00:07:37,040 --> 00:07:41,520
+trying to divide the world into this ontology, right? And the world doesn't actually obey these
+
+88
+00:07:41,520 --> 00:07:46,400
+fixed-need categories. And so it tends to be quite an art to actually coming up with annotation
+
+89
+00:07:46,400 --> 00:07:54,560
+schemes and refining them over time that helps the data be consistently annotated and it helps
+
+90
+00:07:54,560 --> 00:07:59,520
+the model actually do what you want it to do. And then in addition, as well as actually the
+
+91
+00:07:59,520 --> 00:08:04,880
+annotation scheme, there's an implementation phase of the annotation of, you know, sort of running
+
+92
+00:08:04,880 --> 00:08:09,040
+the project effectively so that your annotators know what they're doing, so that they're sort of
+
+93
+00:08:09,040 --> 00:08:13,600
+relatively inconsistently incentivized to give you the sort of annotations that you want to
+
+94
+00:08:13,600 --> 00:08:18,080
+instant, you've got a good feedback loop through it and also quality control processes. So all of
+
+95
+00:08:18,080 --> 00:08:22,800
+these things define what the problem you're going to be solving and what data you're going to use
+
+96
+00:08:22,800 --> 00:08:28,000
+to solve and evaluate it. And then finally, on top of that, that's when we get to this sort of
+
+97
+00:08:28,000 --> 00:08:32,480
+fun bit of, you know, tensuring your flows and descending your gradients of, you know, deciding your
+
+98
+00:08:32,480 --> 00:08:38,720
+model architectures and things and then finally optimization as well. And so these, the model
+
+99
+00:08:38,720 --> 00:08:43,280
+architecture and optimization parts which, you know, the academic community in a lot of tutorials
+
+100
+00:08:43,280 --> 00:08:48,720
+are focusing on. And this does make sense because in a sense, it is kind of a limiting factor that,
+
+101
+00:08:48,720 --> 00:08:53,920
+you know, as a global community, we had better solutions to these things. Overall projects would
+
+102
+00:08:53,920 --> 00:08:58,640
+do better, but in any specific project that you're working with, it's very often the case that
+
+103
+00:08:58,640 --> 00:09:02,880
+these aren't the things that are going to define success or failure. It's very often the earlier phases
+
+104
+00:09:02,880 --> 00:09:07,280
+of this that are going to take a project from something that sort of works or something that
+
+105
+00:09:07,280 --> 00:09:14,640
+really doesn't. So the problem here is that we end up with this chicken and egg problem. So in
+
+106
+00:09:14,640 --> 00:09:19,840
+order to sort of figure out the product vision that we want, we really often need to know how
+
+107
+00:09:19,840 --> 00:09:26,640
+accurate the model is likely to be on that problem. So there's a real characteristic difference that
+
+108
+00:09:26,640 --> 00:09:31,200
+we'll have in the way that we design our application. If we imagine that the model will be say 95%
+
+109
+00:09:31,200 --> 00:09:36,880
+accurate versus if it's only going to be 80% accurate. And those assumptions and differences are
+
+110
+00:09:37,360 --> 00:09:41,680
+going to, we really want to bake that back into the way that the whole interaction flow is designed.
+
+111
+00:09:41,680 --> 00:09:46,560
+For instance, a chat application is probably not going to work very well at all if we're making
+
+112
+00:09:46,560 --> 00:09:52,400
+an error on every utterance. And, you know, the user has constantly asked for clarification.
+
+113
+00:09:52,400 --> 00:09:55,360
+If that's going to be a case, then we probably want to design our application differently.
+
+114
+00:09:56,240 --> 00:10:00,960
+Similarly, for translation, if the translation in our language pair is going to be pretty bad,
+
+115
+00:10:00,960 --> 00:10:06,000
+then we hope that we could have a lot of dictionary back-offs and lots of ways that we can click
+
+116
+00:10:06,000 --> 00:10:11,120
+on words to like, you know, help the user puzzle out what's going wrong or what to do if the
+
+117
+00:10:11,120 --> 00:10:16,960
+translation is bad. And so these, all these things about product design really depend on the
+
+118
+00:10:16,960 --> 00:10:22,240
+accuracy estimate. And the problem there is that in order to get that sort of reasonable accuracy
+
+119
+00:10:22,240 --> 00:10:26,640
+estimate, we have to start making contact with the data. We can't really pluck this out of thin air.
+
+120
+00:10:26,640 --> 00:10:30,000
+And so we need to like start running some experiments. We need to start doing some training
+
+121
+00:10:30,000 --> 00:10:34,160
+in evaluation. And in order to do that, we need to know what label data could lead. And in order to
+
+122
+00:10:34,160 --> 00:10:38,400
+do that, we need to know how our annotations should look. But we don't really know how our
+
+123
+00:10:38,400 --> 00:10:42,240
+annotations should look if we don't know what the model is supposed to do, which feeds back into
+
+124
+00:10:42,240 --> 00:10:46,480
+the product efficient. So we have this like, you know, this chicken and egg problem of like what
+
+125
+00:10:46,480 --> 00:10:50,400
+bit to solve first in this. And I think that that actually drives a lot of the problem here.
+
+126
+00:10:51,040 --> 00:10:56,240
+But okay, so the solution here is that we need to iterate on the whole process. We need to iterate
+
+127
+00:10:56,240 --> 00:11:00,240
+on the code that we're developing for this and the model architecture and the optimization.
+
+128
+00:11:00,240 --> 00:11:04,160
+But we also need to iterate on the data that we're developing and the way that we're framing the
+
+129
+00:11:04,160 --> 00:11:11,280
+problems. So, you know, as we said, like basically don't make assumptions, iterated a more fine
+
+130
+00:11:11,280 --> 00:11:18,400
+grain level and sort of start going over the feedback more quickly. So we have to figure out what
+
+131
+00:11:18,400 --> 00:11:22,320
+models we should train to meet the business needs. And then we have to be asking does the
+
+132
+00:11:22,320 --> 00:11:27,360
+annotation scheme make sense when we start implementing it? And then once we're doing that,
+
+133
+00:11:27,360 --> 00:11:33,680
+we can figure out this problem look easier or hard. And then we can start moving back to
+
+134
+00:11:33,680 --> 00:11:37,280
+the business case and saying what can we do in the application to improve the fault tolerance.
+
+135
+00:11:38,880 --> 00:11:45,440
+So, sort of figure out why this is wrong or where this, you know, basically let's start to look
+
+136
+00:11:45,440 --> 00:11:49,120
+at where this might go wrong. And, you know, I think this is actually probably the most
+
+137
+00:11:50,240 --> 00:11:54,480
+interesting case of failure that I think we've observed while running space,
+
+138
+00:11:54,480 --> 00:11:58,960
+ECM Prodigy and doing our consulting projects. And I think it's one which isn't easily,
+
+139
+00:11:58,960 --> 00:12:05,120
+isn't often discussed. So, when I say modeling decisions here, I really mean the way to business
+
+140
+00:12:05,120 --> 00:12:10,080
+requirements are mapped into a set of statistical models. So, you know, we're going to have some
+
+141
+00:12:10,880 --> 00:12:16,720
+statistical model or combination models that are going to be predicting things. And if we start
+
+142
+00:12:16,720 --> 00:12:21,680
+off with a sort of need of output, there's often a wide variety of ways that we can break that down
+
+143
+00:12:22,400 --> 00:12:28,720
+into decisions. So, here, imagine that we want to build a crime database. And it's going to be,
+
+144
+00:12:28,720 --> 00:12:32,560
+so we're going to be feeding it news reports. And we want to extract the following information.
+
+145
+00:12:32,560 --> 00:12:37,360
+So, we want to label things like victim name, the name of a perpetrator if it's mentioned,
+
+146
+00:12:38,000 --> 00:12:43,200
+a crime location if it's mentioned, the date of the offense, date of arrest if it's mentioned,
+
+147
+00:12:43,200 --> 00:12:46,960
+all of this sort of information. So, this is what we want to output. That's what we want the
+
+148
+00:12:47,760 --> 00:12:54,560
+sort of system to do. So, how should we break that need down into one or more machine learning models?
+
+149
+00:12:54,560 --> 00:12:58,480
+And what data should we undertake to train them? How should we evaluate them, et cetera, et cetera?
+
+150
+00:12:58,480 --> 00:13:02,640
+So, this is what really what I mean by modeling decisions. And the claim that I'm making here is
+
+151
+00:13:02,640 --> 00:13:07,120
+actually that these decisions are incredibly important, really drive successful failure,
+
+152
+00:13:07,120 --> 00:13:11,760
+much more than decisions about, you know, using an LSTM versus using a CNN or something like that.
+
+153
+00:13:12,720 --> 00:13:18,640
+Okay. So, here's one obvious way to do it that I'm going to suggest is probably pretty unideal.
+
+154
+00:13:19,200 --> 00:13:24,320
+So, imagine that we're going to be labeling these as, you know, basically spans of
+
+155
+00:13:24,320 --> 00:13:30,160
+text as victim and another span of text as a crime location. And we're going to basically
+
+156
+00:13:30,160 --> 00:13:34,480
+phrase this as an entity recognition problem. And we're going to train something like a sort of
+
+157
+00:13:34,480 --> 00:13:41,120
+standard entity recognition model that's going to read the text and try to apply begin inside
+
+158
+00:13:41,120 --> 00:13:47,840
+and labels to these words. So, this coding clearly can meet the business need.
+
+159
+00:13:47,840 --> 00:13:53,040
+So, it's clear that, you know, if a classifier could reproduce these annotations accurately,
+
+160
+00:13:53,040 --> 00:13:57,680
+we can use the annotations that it's producing to meet what we need. The question is,
+
+161
+00:13:57,680 --> 00:14:03,040
+is this the best way to frame the problem so that it will be cheap to acquire at the annotations
+
+162
+00:14:03,040 --> 00:14:06,800
+and that the model will perform accurately? And I suggested actually it probably not.
+
+163
+00:14:07,680 --> 00:14:12,640
+So, here's an alternate way to think about this instead. So, instead of having this sort of
+
+164
+00:14:12,640 --> 00:14:17,360
+annotation, we might instead do something like this. So, we might apply a bit of information
+
+165
+00:14:17,360 --> 00:14:23,360
+across a wider span of text. So, we do text classification for crime. And then we might
+
+166
+00:14:23,360 --> 00:14:30,320
+have a more generic person location, et cetera, tagging. And this doesn't necessarily tag exactly
+
+167
+00:14:30,320 --> 00:14:35,520
+the same information. So, here, for instance, King Cross is tagged as a location as well as East
+
+168
+00:14:35,520 --> 00:14:40,800
+London because we're not joining in the coding of the roles that we have here. Like, we're not trying
+
+169
+00:14:40,800 --> 00:14:49,920
+to figure out that East London was the location of the crime. At this phase of it, we're just tagging
+
+170
+00:14:49,920 --> 00:14:57,600
+this location. So, the thing to think about here is that we're really making the problem a lot
+
+171
+00:14:57,600 --> 00:15:02,560
+simpler for each of the models that we're composing together. So, it's a lot simpler to have one
+
+172
+00:15:02,560 --> 00:15:06,400
+text classification model that tries to decide whether a crime is being discussed,
+
+173
+00:15:06,400 --> 00:15:11,680
+then to replicate that information across and kind of adjoin it into the entity classifications.
+
+174
+00:15:11,680 --> 00:15:18,240
+And so, instead of trying to decide at each of these things that, okay, is this a crime location
+
+175
+00:15:18,240 --> 00:15:23,600
+as well as whether it's a crime, we can factor the information away from each other. And that
+
+176
+00:15:23,600 --> 00:15:30,720
+is going to make the annotations a lot easier to both annotate and fit it for a model to recognize.
+
+177
+00:15:30,720 --> 00:15:36,320
+And it will likely take much less annotation to do this if you compose it this way. So,
+
+178
+00:15:36,320 --> 00:15:41,920
+there's still extra logic that has to be performed to, say, figure out that this person is actually
+
+179
+00:15:41,920 --> 00:15:46,720
+to victim of the crime as opposed to a perpetrator or some incidental person. But we can do this with
+
+180
+00:15:46,720 --> 00:15:52,480
+other annotations and other rule-based processes as well. So, here's a quick look at some of the
+
+181
+00:15:52,480 --> 00:15:59,440
+annotations that Spacey produces that are not problem-dependent. So, these are sort of generic
+
+182
+00:15:59,440 --> 00:16:05,040
+information that's added as well. So, here we can see that Alex Smith is annotated as a passive
+
+183
+00:16:05,840 --> 00:16:11,440
+subject of staffed. In other words, he's the person who was staffed and that grammatical relation
+
+184
+00:16:11,440 --> 00:16:17,680
+there is linked there. So, we could have an extra sort of process that says, okay, something like
+
+185
+00:16:17,680 --> 00:16:22,960
+a stab and we can build up a lexicon of these sort of victim words. And we can then have a
+
+186
+00:16:22,960 --> 00:16:28,000
+rule-based process that says, okay, if we've got that sort of crime act and then you take the subject
+
+187
+00:16:28,000 --> 00:16:33,520
+of it, that's going to be the victim of the crime. Now, I don't want to commit to one specific
+
+188
+00:16:33,520 --> 00:16:37,280
+plan for these things because the point is that it does have to be experimental, but I hope you
+
+189
+00:16:37,280 --> 00:16:41,520
+can see that there's a lot of choices here. And making the correct choices on all of these things
+
+190
+00:16:41,520 --> 00:16:46,720
+is not trivial. So, the correct answer is not to decide everything up front, assume we're right,
+
+191
+00:16:46,720 --> 00:16:50,640
+and start collecting lots of annotations. We need to start iterating and start seeing what
+
+192
+00:16:50,640 --> 00:16:56,080
+works for any specific problem. And that's going to, in general, yield a much better, yield much
+
+193
+00:16:56,080 --> 00:17:06,400
+better results if we take this sort of iterative approach. So, as I said here, to sort of take home
+
+194
+00:17:06,400 --> 00:17:11,840
+message here is that we often want to be composing generic models and the model solutions. So,
+
+195
+00:17:11,840 --> 00:17:16,240
+we can have generic categories like location and person. And this lets you use pre-trained models
+
+196
+00:17:16,240 --> 00:17:22,880
+like Spacy provides. And then, fine-tuning those pre-trained models on your domain is a lot cheaper
+
+197
+00:17:22,960 --> 00:17:28,720
+than creating annotation data for new categories. And in particular, you don't have this risk of
+
+198
+00:17:28,720 --> 00:17:32,640
+making new categories, but then you have to refine later and then you have to throw out all the
+
+199
+00:17:32,640 --> 00:17:38,080
+data that you annotated before. So, life's a lot simpler if you can rely on generic categories
+
+200
+00:17:38,080 --> 00:17:45,520
+much more than trying to come up with your own. And then, additionally, if you have things like
+
+201
+00:17:46,320 --> 00:17:52,080
+events or topics and things like this sort of semantic information, I suggest that you usually
+
+202
+00:17:52,080 --> 00:17:56,400
+think about annotating this at a sentence or paragraph document level rather than trying to fix it
+
+203
+00:17:56,400 --> 00:18:01,920
+to specific phrases. And the reason is that if you do this as phrase annotations, you very often
+
+204
+00:18:01,920 --> 00:18:06,560
+have indeterminacies about the boundaries of these things. And especially if the language gets
+
+205
+00:18:06,560 --> 00:18:10,560
+even slightly metaphorical, trying to figure out exactly which word in a sentence in codes
+
+206
+00:18:10,560 --> 00:18:15,600
+that a crime was committed ends up being super hard. So, if you want it to be something like,
+
+207
+00:18:15,600 --> 00:18:21,040
+you know, okay, I just want to know, is it about a crime? You really shouldn't try to put that at
+
+208
+00:18:21,040 --> 00:18:25,360
+the word level. You should put it at the sentence or paragraph level. And then if you do that,
+
+209
+00:18:26,240 --> 00:18:34,160
+the annotations easier, the classifications more consistent and easier to learn. And then you can
+
+210
+00:18:34,160 --> 00:18:39,440
+combine these pieces of information to produce the solutions that you're interested in.
+
+211
+00:18:40,640 --> 00:18:45,120
+Similarly, if you want something that are sort of like semantic roles or like the person who did
+
+212
+00:18:45,120 --> 00:18:51,840
+something versus the person who didn't, and you can annotate those things by single words and
+
+213
+00:18:51,840 --> 00:18:57,280
+then use the syntactic paths to get the boundaries around that. So, you're basically sort of like
+
+214
+00:18:57,280 --> 00:19:01,360
+having a grid that you're snapping the phrases to. And this makes sure that your boundaries always
+
+215
+00:19:01,360 --> 00:19:09,520
+make sense. Okay. So, here's a quick look at how this ends up looking, or how does sort of work,
+
+216
+00:19:09,520 --> 00:19:16,880
+flow looks, if you're using our tool set. So, the Prodigy annotation tool gives you a few commands
+
+217
+00:19:16,880 --> 00:19:23,280
+that you can basically use to start a little web service locally. And you give it a name of the
+
+218
+00:19:23,280 --> 00:19:28,160
+data set, and it's going to save that in a little database locally. By default, we use sqlite
+
+219
+00:19:28,160 --> 00:19:36,240
+to sort of save you from installing extra software. And then you can give it an input data file,
+
+220
+00:19:36,240 --> 00:19:41,120
+which is by default just formatted in jsonl. It can also read from standard input. And you give it
+
+221
+00:19:41,120 --> 00:19:46,720
+a label that you might want to annotate. So, in this case, you're going to be get this feed of
+
+222
+00:19:46,720 --> 00:19:51,840
+data and you can just basically click through whether it's a crime or not. And so, this is super quick
+
+223
+00:19:51,840 --> 00:19:55,920
+because you're just annotating these short pieces of text like a sentence and applying a binary
+
+224
+00:19:55,920 --> 00:20:00,880
+label. So, it's pretty normal to be making one of these decisions every five to 10 seconds or so
+
+225
+00:20:00,880 --> 00:20:05,520
+because you basically have this really simple decision to make. And that means that you can annotate
+
+226
+00:20:05,520 --> 00:20:09,680
+the data set for that very quickly. And you can build up just enough records to see whether
+
+227
+00:20:09,680 --> 00:20:14,080
+how accurate that model will be and how simple the task will be very quickly, like, you know,
+
+228
+00:20:14,080 --> 00:20:19,440
+less than an hour of work and you can have an initial result. Similarly, we have this
+
+229
+00:20:19,440 --> 00:20:23,760
+teach recipe that lets you improve the accuracy of pre-trained categories. So, you know, you can
+
+230
+00:20:23,760 --> 00:20:29,200
+feed in a label like personal location. And if there's an initial model that can make those
+
+231
+00:20:29,200 --> 00:20:34,560
+decisions like, for instance, Spacey provides, you can just use this to sort of fine tune the
+
+232
+00:20:35,120 --> 00:20:38,400
+accuracy. So, you can tell it whether the model is right or wrong and it will train from that
+
+233
+00:20:38,400 --> 00:20:45,520
+and basically update its accuracy on this. Then, as a next process, given all of the annotations that
+
+234
+00:20:45,520 --> 00:20:51,760
+you've provided so far, you can run batch training and, you know, basically see how the accuracy
+
+235
+00:20:51,760 --> 00:20:56,480
+doesn't try out different hyperparameters and you can do this for the NER as well. And then the
+
+236
+00:20:56,480 --> 00:21:02,400
+output of all of this is essentially just a model that you can feed into Spacey. So, the Spacey
+
+237
+00:21:02,480 --> 00:21:07,840
+NLP library lets you just load this up and then you just get basically this function that converts
+
+238
+00:21:08,800 --> 00:21:14,640
+text into this doc object and the doc object that makes the annotations easy to access. So,
+
+239
+00:21:14,640 --> 00:21:18,960
+you can do Doc.nence and, you know, assuming everything was correct, you'll get something like
+
+240
+00:21:18,960 --> 00:21:23,920
+Alex Smith, Rhys London, and these will have the labels that you are interested in attached. So,
+
+241
+00:21:23,920 --> 00:21:28,640
+Alex Smith hopefully will be labeled as a person. East London hopefully will be labeled as a location.
+
+242
+00:21:29,520 --> 00:21:36,320
+And then you also get this, there's a text categorization. So, that's accessible at Doc.cats
+
+243
+00:21:37,040 --> 00:21:41,120
+and that will tell you that it was a crime with, you know, 90% certainty or something like that.
+
+244
+00:21:42,160 --> 00:21:48,240
+So, the whole workflow here is pretty simple and importantly, we, it's very useful to make
+
+245
+00:21:48,240 --> 00:21:52,720
+sure that it's outputting a model in the form that you can then easily plug forward into your
+
+246
+00:21:52,720 --> 00:21:57,360
+production system so that you can start trying this out in the context replication and sort of
+
+247
+00:21:57,360 --> 00:22:01,680
+both sanity check it and start seeing what would be useful and what isn't. So, you know,
+
+248
+00:22:01,680 --> 00:22:06,080
+basically try to avoid spending too long in the single sandbox or too long in any one step of
+
+249
+00:22:06,080 --> 00:22:11,680
+that iterative process. If we can iterate over the hall, all of the steps quicker, then we can
+
+250
+00:22:11,680 --> 00:22:16,320
+sort of loop back around then sort of progressively improve it. So, rather than spending, you know,
+
+251
+00:22:16,320 --> 00:22:22,880
+investing huge amounts in an annotation project or design project, you start getting evidence quicker.
+
+252
+00:22:22,880 --> 00:22:27,440
+And, you know, it's really follows the same sort of logic as other development things where the
+
+253
+00:22:27,440 --> 00:22:32,320
+waterfall methodology is, tends to perform worse if it's uncertainty than having a sort of
+
+254
+00:22:32,320 --> 00:22:41,200
+rapid iterative approach. So, and that really feeds into the second problem that I'm basically
+
+255
+00:22:41,200 --> 00:22:46,080
+going to highlight here and that's that if you really only have an annotation process that's
+
+256
+00:22:46,080 --> 00:22:49,680
+designed for big annotation projects and you're only thinking about how to scale up and how to
+
+257
+00:22:49,680 --> 00:22:55,120
+collect tons of data because you assume that that's what you need, then your time to first
+
+258
+00:22:55,120 --> 00:22:59,280
+bit of evidence is going to be very large and the investment that you need to start collecting
+
+259
+00:22:59,280 --> 00:23:04,720
+some bit of evidence is going to be very high. And, that's going to be a real problem because
+
+260
+00:23:04,720 --> 00:23:10,640
+you're going to design this whole big annotation process around assumptions which later may be
+
+261
+00:23:10,640 --> 00:23:14,880
+unideal. So, instead of just, we want a much more fine ground approach where you can scale down
+
+262
+00:23:14,960 --> 00:23:21,920
+and get a much, so, and you can start basing your assumptions on contact with data and evidence.
+
+263
+00:23:21,920 --> 00:23:27,040
+So, we want an easy way to get, say, 200 annotations that you can run an easy process. We want
+
+264
+00:23:27,040 --> 00:23:31,600
+a process where you can have, say, you know, do one hour of work and get a meaningful, like,
+
+265
+00:23:31,600 --> 00:23:35,760
+insight into what you should do next and in order to schedule the next five hours of work,
+
+266
+00:23:35,760 --> 00:23:39,920
+so you can schedule the next 20 hours of work, etc. And, you can always be sort of building
+
+267
+00:23:39,920 --> 00:23:43,680
+brute strapping that forward based on, you know, contact with the data and evidence instead of
+
+268
+00:23:43,680 --> 00:23:49,680
+just guesses about what might work. And, this is good because of that fundamental uncertainty
+
+269
+00:23:49,680 --> 00:23:52,960
+that we have around this. So, if you just make guesses, you're very likely to be wrong.
+
+270
+00:23:53,840 --> 00:23:58,000
+And, that's why, you know, having a process that scales down, as well as a process that scales
+
+271
+00:23:58,000 --> 00:24:04,080
+up is so important. And, so, you know, the prescription that we have here is that, you know,
+
+272
+00:24:04,080 --> 00:24:08,000
+basically even as a data scientist yourself, you know, your job isn't just to, you know,
+
+273
+00:24:08,000 --> 00:24:13,040
+flow your tenses and design models, you should be doing these annotation projects initially yourself.
+
+274
+00:24:13,040 --> 00:24:18,160
+And, that is going to give you a much better insight into what's likely to work.
+
+275
+00:24:18,160 --> 00:24:22,480
+So, as part of your sort of daily workflow, having tooling that makes it easy to start annotating
+
+276
+00:24:22,480 --> 00:24:28,000
+data to evaluate your ideas and to start, if you have a new idea about, you know, art is product
+
+277
+00:24:28,000 --> 00:24:33,120
+might, you know, a new machine learning power feature might work in this product or business process.
+
+278
+00:24:33,120 --> 00:24:37,760
+Instead of sort of coloring management and putting everybody in a room to schedule a meeting
+
+279
+00:24:37,760 --> 00:24:41,600
+to barrack for your case, you can just start trying it out and you can start seeing whether you're
+
+280
+00:24:41,600 --> 00:24:47,280
+right that some approach is tractable that a some model will work. And this is going to be
+
+281
+00:24:47,280 --> 00:24:52,640
+ultimately much more productive, even though it feels like, oh, or wasting time, I'm annotating,
+
+282
+00:24:52,640 --> 00:24:58,240
+it's much more productive than having an idea for, you know, widening your hidden layers and like,
+
+283
+00:24:58,240 --> 00:25:04,880
+you know, coding that up and then waiting for that to train, et cetera. The real good leverage
+
+284
+00:25:04,880 --> 00:25:10,080
+point is going to be in the way that you design the way that you break down the problem into
+
+285
+00:25:10,080 --> 00:25:14,400
+different machine learning models. And so if you spend much longer, you know, basically figure
+
+286
+00:25:14,400 --> 00:25:19,680
+out in out that you're annotating the correct things and structuring the project correctly,
+
+287
+00:25:19,680 --> 00:25:25,360
+you're going to have a much better chance of success. A final tip that I would recommend is this
+
+288
+00:25:25,360 --> 00:25:30,640
+sort of a bear evaluation. And so this is really a trick that lets you do fine-grained evaluation
+
+289
+00:25:30,720 --> 00:25:45,840
+without a huge evaluation set. 10? Okay, cool. So what I mean by this is, normally, if you're,
+
+290
+00:25:45,840 --> 00:25:50,800
+you know, let's say you're interested in figuring out whether some model is 90% accurate
+
+291
+00:25:50,800 --> 00:25:56,000
+of 91% accurate. Well, in order to sort of figure out that 1% of accuracy, you probably need to
+
+292
+00:25:56,000 --> 00:26:00,800
+base that decision on about 10 examples. So you need about a thousand annotated examples to
+
+293
+00:26:00,800 --> 00:26:06,720
+sort of reliably guess that, you know, 1% sensitivity. Well, if instead of that, we do a B
+
+294
+00:26:06,720 --> 00:26:13,280
+evaluation, we can actually do that much easier. So this is what the A B evaluation looks like,
+
+295
+00:26:13,280 --> 00:26:17,200
+it, tool looks like in prodigy, and actually it's especially good for genitive
+
+296
+00:26:17,200 --> 00:26:22,800
+outputs where having a fixed evaluation set is not even very tractable. So imagine that we have
+
+297
+00:26:22,880 --> 00:26:28,400
+this an image captioning problem, and so we have this image, and we want to know which of these two
+
+298
+00:26:28,400 --> 00:26:34,080
+outputs is better. So imagine that we've got two models that we're trying to evaluate and compare,
+
+299
+00:26:34,080 --> 00:26:37,920
+and so one of them has told us that this is a plug and a blanket on the grass, and the other one
+
+300
+00:26:37,920 --> 00:26:42,800
+has told us that it's an unhappy child in the garden. So clearly, we want to say that this one's
+
+301
+00:26:42,800 --> 00:26:47,840
+better. And so if we randomly shuffle the order of our system outputs, we can basically just,
+
+302
+00:26:47,840 --> 00:26:53,680
+you know, A B evaluate this through a few hundred times, and we can do that very quickly.
+
+303
+00:26:53,680 --> 00:26:58,160
+And this means that even if the models are only slightly different, if they're outputting
+
+304
+00:26:58,160 --> 00:27:03,280
+the same thing, we get to skip the example. And so you're, and you're very directly saying,
+
+305
+00:27:03,280 --> 00:27:08,240
+ah, this one or that one is better. And that means that even if you're only making a small tweak,
+
+306
+00:27:08,240 --> 00:27:12,800
+you can probably evaluate it yourself in about 10 or 20 minutes. You don't need a huge evaluation
+
+307
+00:27:12,880 --> 00:27:18,560
+set to do this. Now, of course, this isn't as repeatable as a huge evaluation set. And so eventually,
+
+308
+00:27:18,560 --> 00:27:23,120
+you do want to sort of stable consistent evaluation. But when you're scaling down and you just want to,
+
+309
+00:27:23,120 --> 00:27:27,760
+you know, basically, be more nimble, this is the A B evaluation is a good approach for a lot of
+
+310
+00:27:27,760 --> 00:27:33,440
+things. And again, it gives you a good evaluation even on generative outputs instead of relying on
+
+311
+00:27:33,440 --> 00:27:40,880
+some nonsense, like a blur score or something. Okay. So then a final problem that we, that I want
+
+312
+00:27:40,880 --> 00:27:45,760
+to highlight is that, you know, even the way that people actually approach annotation is often
+
+313
+00:27:45,760 --> 00:27:50,320
+pretty bad. And we summarize this problem by saying that it's hard to get good data by boring
+
+314
+00:27:50,320 --> 00:27:55,440
+to shit out of underpaid people. So if you just put your task on Amazon Mechanical Turk,
+
+315
+00:27:55,440 --> 00:27:58,480
+there's a whole lot of intermediate problems that you have to solve to actually make sure that
+
+316
+00:27:58,480 --> 00:28:02,480
+you're going to get quality annotations that you could learn from. And if you don't immediately
+
+317
+00:28:02,480 --> 00:28:07,440
+get quality annotations that you can learn from, it's very hard to interpret the results and
+
+318
+00:28:07,440 --> 00:28:12,480
+inspect whether the data was wrong or your model is wrong or like the annotation scheme was wrong
+
+319
+00:28:12,480 --> 00:28:18,560
+because there's too many explanations for what for the problem. So I would suggest that processes
+
+320
+00:28:18,560 --> 00:28:22,560
+like Mechanical Turk or other outsourcing based processes that are designed to drive the
+
+321
+00:28:22,560 --> 00:28:27,840
+and the marginal cost of new annotation towards zero are actually mostly solving the wrong problem.
+
+322
+00:28:28,800 --> 00:28:34,560
+What you want is a time to first data set and the and a process that's going to be reliable
+
+323
+00:28:34,560 --> 00:28:42,000
+rather than trying to see it as okay, how much can we pay per individual annotation? The overhead
+
+324
+00:28:42,000 --> 00:28:47,520
+is actually something that matters a lot more. And so I actually think that for most situations
+
+325
+00:28:47,520 --> 00:28:52,480
+having a small annotation team working consistently with a good workflow and good communication
+
+326
+00:28:52,480 --> 00:28:58,240
+with data scientists is usually going to give you better results. And in particular reframing
+
+327
+00:28:58,240 --> 00:29:03,280
+your problems so that you'll break them down into smaller pieces so that the annotator has to
+
+328
+00:29:03,280 --> 00:29:09,280
+consider less at a time is also very productive. So the insight here is that the annotators don't
+
+329
+00:29:09,280 --> 00:29:15,280
+need to have a workflow that exactly matches the way that the model works. So even if the annotators
+
+330
+00:29:15,280 --> 00:29:20,000
+are sort of seeing a sort of pre-suggested output or pre-field output and the model won't,
+
+331
+00:29:20,000 --> 00:29:24,320
+that's probably going to be fine and in fact it often makes the annotation more accurate to have
+
+332
+00:29:24,320 --> 00:29:30,320
+it semi-automatic because if you try to have somebody constantly make the same decision a thousand
+
+333
+00:29:30,320 --> 00:29:34,400
+times in a row it's very likely that they're going to have some reliability errors and they're going
+
+334
+00:29:34,400 --> 00:29:39,120
+to have some, make some errors that a machine never would. So for instance if you're tagging parts
+
+335
+00:29:39,120 --> 00:29:45,840
+of speech you pretty much don't want to have a human annotate every instance of the as and mark
+
+336
+00:29:45,840 --> 00:29:49,360
+that as a determiner because they're going to be wrong sometimes and when they're wrong they're
+
+337
+00:29:49,360 --> 00:29:53,840
+probably going to really confuse the model. Whereas if you do that semi-automatically and they only
+
+338
+00:29:53,840 --> 00:29:59,200
+have to you know basically correct this when it's wrong you're going to have actually more consistent
+
+339
+00:29:59,200 --> 00:30:06,640
+annotations. Finally I also actually suggested doing annotation in-house and having is good for lots
+
+340
+00:30:06,640 --> 00:30:10,800
+of reasons and not least of which is data privacy because you don't have this sort of third-party
+
+341
+00:30:10,800 --> 00:30:16,960
+provider problem who probably wants to be clever and outsourced to data themselves and so then
+
+342
+00:30:16,960 --> 00:30:23,120
+the text which you know maybe say use a feedback on your product or you know text that was uploaded
+
+343
+00:30:23,200 --> 00:30:30,240
+into your platform or user messages and things might be getting out to some arbitrary number of
+
+344
+00:30:30,240 --> 00:30:35,760
+people which even before you know sensible regulations were introduced I actually think is something
+
+345
+00:30:35,760 --> 00:30:39,520
+that people should definitely worry about and it's like you know not a good look for anybody.
+
+346
+00:30:40,480 --> 00:30:48,000
+So to wrap this up the solution to this chicken and egg problem is iteration so you know
+
+347
+00:30:48,000 --> 00:30:52,400
+base and this sort of makes deep sense right like if you can't solve the problem analytically we have
+
+348
+00:30:52,400 --> 00:30:56,480
+to solve it iteratively like if we can't reason from you know if we've got this sort of circular
+
+349
+00:30:56,480 --> 00:31:01,360
+dependency and we want to sort of progressively estimate all of these things well we have to just start
+
+350
+00:31:02,640 --> 00:31:08,400
+make an initial estimate and start feeding that forward and then progressively iterate on this
+
+351
+00:31:08,400 --> 00:31:13,040
+and you know in the same way that we would do this into you know basically in a machine learning
+
+352
+00:31:13,040 --> 00:31:17,360
+solution I think the same actually works here it's you know a fundamental thing about the knowledge
+
+353
+00:31:18,160 --> 00:31:23,440
+being float float around then the the fact that there's this sort of dependency structure
+
+354
+00:31:23,440 --> 00:31:27,360
+means that actually this is a you know satisfying approach so thanks.
+
+355
+00:31:37,040 --> 00:31:43,120
+Thanks very much Matt for a very nice talk. Are there any questions in the audience over here?
+
+356
+00:31:43,920 --> 00:31:55,520
+Thanks for your talk. I just have one question about the screenshot that you displayed there
+
+357
+00:31:56,320 --> 00:32:05,520
+about Spacey. It's able to detect the text as crime. Is it come automatically from Spacey or you
+
+358
+00:32:05,520 --> 00:32:12,080
+make some adjustment on it so you maybe fit the label on it? Okay so I'll just go back to the
+
+359
+00:32:12,080 --> 00:32:21,040
+slide just so that we have a grounding of what we're talking about. So the the process here of the
+
+360
+00:32:21,040 --> 00:32:28,000
+disk batch train that's outputting a text classification model that can then sort of feed into the
+
+361
+00:32:28,000 --> 00:32:32,960
+Spacey pipeline and so that sits in the Spacey pipeline and it has the job of taking dock objects
+
+362
+00:32:32,960 --> 00:32:38,800
+and attaching making predictions based on its neural network model and attaching those predictions
+
+363
+00:32:38,800 --> 00:32:45,920
+into the dock.cats process. So you can actually you know you could for instance write an arbitrary
+
+364
+00:32:45,920 --> 00:32:51,200
+function that had that job and it had it to the pipeline or you could write your own machine
+
+365
+00:32:51,200 --> 00:32:58,080
+learning model but the built-in text categorization system that's Spacey provides uses an ensemble
+
+366
+00:32:58,080 --> 00:33:05,520
+of the convolutional neural network and a bag of words model and then prodigy trains this
+
+367
+00:33:05,600 --> 00:33:11,680
+and it outputs it into the model for Spacey to use. So I think the label is in your data set.
+
+368
+00:33:12,240 --> 00:33:19,840
+So the label the label crime comes in here where we label this and we do this text cat teach that
+
+369
+00:33:19,840 --> 00:33:24,800
+creates the training data then in this step we train from the training data outputting a model.
+
+370
+00:33:25,520 --> 00:33:30,720
+We use that model as the input into this any our batch train process and that carries forward the
+
+371
+00:33:30,720 --> 00:33:35,120
+text cat model into the full model that's output here and then we load the full model and that's
+
+372
+00:33:35,120 --> 00:33:53,920
+how the data flows around. Okay yes in the back. Okay yeah you set some like you made the
+
+373
+00:33:54,320 --> 00:34:00,800
+example to some like extract the victim and maybe also the murderer of a crime and for that you
+
+374
+00:34:00,800 --> 00:34:06,640
+set maybe use the dependency parser but the dependency parser tends to some like it considerably
+
+375
+00:34:06,640 --> 00:34:12,960
+worse if some like your corpus has a different structure than the dependency parser was originally
+
+376
+00:34:13,680 --> 00:34:19,520
+trained on so normally dependency parser has an accuracy of 93% or something like that but I can
+
+377
+00:34:19,600 --> 00:34:26,560
+see often that it gets down to something like 60% on some like very different colloquial speech
+
+378
+00:34:26,560 --> 00:34:34,320
+so how would you treat a problem like that. So this is definitely a concern and in particular
+
+379
+00:34:34,320 --> 00:34:39,040
+I would say that it's often hard to reason about or hard to guess how useful the dependency
+
+380
+00:34:39,040 --> 00:34:45,760
+parser would be before you start trying things out. So if it is the case that you'd like to use
+
+381
+00:34:46,080 --> 00:34:52,240
+and the accuracy isn't high enough having this sort of training process where you you know
+
+382
+00:34:52,240 --> 00:34:56,640
+are basically improving the accuracy of it on your domain is something that we're we definitely
+
+383
+00:34:56,640 --> 00:35:03,040
+see a solution going forward. So the dependency sort of recipes in prodigy are still a little bit
+
+384
+00:35:03,920 --> 00:35:11,920
+in beta form but you can already use this to you know start making some corrections to the dependency
+
+385
+00:35:12,720 --> 00:35:18,000
+if it is the case that the dependency parser doesn't do what you want then actually having
+
+386
+00:35:18,000 --> 00:35:26,240
+another model that is basically only constrained to work on the person category I would say is
+
+387
+00:35:26,240 --> 00:35:32,480
+probably going to be a better approach. So in other words you could classify only to person
+
+388
+00:35:32,480 --> 00:35:37,120
+entities and apply some sort of more specific model based on that for whether it is a victim.
+
+389
+00:35:37,120 --> 00:35:44,320
+Another option would be that you might have a sort of fixed number of frames that you know
+
+390
+00:35:44,320 --> 00:35:49,040
+basically predicate argument structures for like you know shapes at which to sort of these
+
+391
+00:35:49,040 --> 00:35:53,600
+relationships between victim perpetrator etc. And if that's the case then you can classify this
+
+392
+00:35:53,600 --> 00:35:58,000
+you can tag the sentence with those things instead of relying on the dependency parser's features.
+
+393
+00:35:59,200 --> 00:36:05,440
+Finally you can also reduce the sentence and train your own sort of little parse tree over
+
+394
+00:36:06,160 --> 00:36:10,720
+just the sentence, just the input pieces which are useful. So you basically get just to use
+
+395
+00:36:10,720 --> 00:36:17,680
+the tree building technology and train that yourself and because that's working on such a reduced
+
+396
+00:36:17,680 --> 00:36:21,840
+problem level and you can abstract the English so much that may also be easy to try.
+
+397
+00:36:22,720 --> 00:36:27,520
+May also be easy to train. So there's a sort of range of options that you can sort of think about
+
+398
+00:36:27,520 --> 00:36:32,080
+and explore that will depend on the specific sort of problem but I would definitely say that
+
+399
+00:36:32,080 --> 00:36:35,600
+it's not something where you just know ahead of time that like this is the one way to do it.
+
+400
+00:36:35,600 --> 00:36:39,120
+Let's invest everything in this. You should you know explore these things and iterate.
+
+401
+00:36:42,960 --> 00:36:46,240
+Yes. Sure.
+
+402
+00:36:51,600 --> 00:36:58,800
+Hi so you mentioned a dependency parser recipe. Do you see a more generic
+
+403
+00:36:58,800 --> 00:37:07,120
+just link prediction recipe in the future? So you can you can definitely use the tooling
+
+404
+00:37:07,120 --> 00:37:13,760
+there for sort of more generic link annotations. The only sort of coupling with the recipe
+
+405
+00:37:13,760 --> 00:37:17,760
+there is that you know we wanted to have the pre-trained model there and you know have that sort
+
+406
+00:37:17,760 --> 00:37:24,320
+of suggesting the links and things. So because the pre-trained models that we provide do you know
+
+407
+00:37:24,320 --> 00:37:29,280
+basically this syntactic structure there's a question of how you will sort of get the initial
+
+408
+00:37:29,280 --> 00:37:34,080
+suggestions if you're doing it that way. But if you have some process that basically suggests
+
+409
+00:37:34,080 --> 00:37:38,160
+links for you you can certainly just pipe those into production and say yes or no to them.
+
+410
+00:37:38,160 --> 00:37:43,040
+That's no problem. We have time for one last question.
+
+411
+00:37:44,000 --> 00:37:45,840
+Over there I think it was first.
+
+412
+00:37:57,840 --> 00:38:07,040
+So I have a question in terms of the features that currently you guys are looking at which is
+
+413
+00:38:07,120 --> 00:38:15,600
+very focused on the text. Is there any focus towards other types of features that maybe in the
+
+414
+00:38:15,600 --> 00:38:22,880
+either visual or positional or formatting sense when processing things like documents or images
+
+415
+00:38:22,880 --> 00:38:29,760
+with text. Are you guys looking to also use space or one of these frameworks to be able to
+
+416
+00:38:29,760 --> 00:38:35,040
+extract these features and and load them and be able to analyze them even with with
+
+417
+00:38:35,040 --> 00:38:41,360
+prodigy like PDFs etc. So this has come up a bit over the last few months and so it's
+
+418
+00:38:41,360 --> 00:38:47,840
+definitely something that we've been thinking about. I think the solution that I think is
+
+419
+00:38:47,840 --> 00:38:56,800
+probably best is that you feed the the output of say a more you know text-focused model forwarders
+
+420
+00:38:56,800 --> 00:39:02,400
+features into a downstream model which combines information from different sources. So you know
+
+421
+00:39:02,480 --> 00:39:07,040
+as an example of the type of thing which is coming up people might have want to do named entity
+
+422
+00:39:07,040 --> 00:39:10,880
+recognition. There's some metadata or attached to the article or something like you know maybe
+
+423
+00:39:10,880 --> 00:39:16,640
+topic categories or something like this and they want to use those features to improve the
+
+424
+00:39:16,640 --> 00:39:20,080
+accuracy of the entity recognition which is you know a very reasonable thing to want to do.
+
+425
+00:39:20,880 --> 00:39:25,600
+So rather than having a general purpose way of putting those features into the entity recognition
+
+426
+00:39:25,600 --> 00:39:30,080
+model and kind of trying to retrain with new features I think it's actually better to do it
+
+427
+00:39:30,080 --> 00:39:34,880
+sort of the inverse and take the output of the entity recognition model and feed that forward
+
+428
+00:39:34,880 --> 00:39:41,040
+into a next level model and I think that'll make it easier to for us to you know be providing
+
+429
+00:39:41,040 --> 00:39:46,160
+something which is reusable across different things and also that you can sort of really write
+
+430
+00:39:46,160 --> 00:39:51,760
+arbitrary features yourself rather than having to be limited to whatever feature API we ended up
+
+431
+00:39:51,760 --> 00:39:56,080
+trying to expose to make a compromise for that. So I think that that's probably the best way to
+
+432
+00:39:56,080 --> 00:40:02,800
+make that happen. Okay let's thank Joseby Curian.
+
